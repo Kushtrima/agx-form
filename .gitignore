@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+
+# Runtime / generated
+uploads/*
+!uploads/.gitkeep
+data/submissions.jsonl
+*.log
+
+# PHP
+vendor/
+composer.lock

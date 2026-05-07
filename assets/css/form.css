@@ -1,0 +1,286 @@
+/* ==========================================================
+   Shared base styles — used on every page
+   ========================================================== */
+
+* { box-sizing: border-box; }
+
+:root {
+  --bg-blue:        #1F5AAD;
+  --bg-blue-deep:   #1B4F99;
+  --primary:        #1F5AAD;
+  --primary-dark:   #174584;
+  --text-dark:      #1F5AAD;
+  --text-muted:     #7A8A9C;
+  --border-light:   #E2E8EF;
+  --border-input:   #D5DDE6;
+  --green-cta:      #2DA84A;
+  --green-cta-hover:#249341;
+  --glass-blue:     #C8DBED;
+  --glass-green:    #B8E5B5;
+  --white:          #FFFFFF;
+  --shadow-card:    0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg-blue);
+  color: var(--text-dark);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.page-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+/* ----- Top headline ----- */
+.headline {
+  text-align: center;
+  color: var(--white);
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+  margin: 16px 0 36px;
+}
+
+/* ==========================================================
+   Stepper — 5 step progress bar
+   ========================================================== */
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 920px;
+  margin: 0 auto 48px;
+  position: relative;
+}
+
+.stepper::before {
+  content: "";
+  position: absolute;
+  left: 32px;
+  right: 32px;
+  top: 50%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.55);
+  z-index: 0;
+}
+
+.step-circle {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+  color: var(--primary);
+  border: 1px solid var(--white);
+  z-index: 1;
+}
+
+.step-circle.done {
+  background: var(--white);
+  color: var(--primary);
+}
+
+.step-circle.done svg,
+.step-circle.pending svg {
+  width: 16px;
+  height: 16px;
+}
+
+.step-circle.pending {
+  background: transparent;
+  color: var(--white);
+  border: 1px solid var(--white);
+}
+
+/* ==========================================================
+   Card
+   ========================================================== */
+.card {
+  background: var(--white);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
+  padding: 48px 56px;
+  position: relative;
+}
+
+.card.glow {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.18), var(--shadow-card);
+}
+
+/* ==========================================================
+   Buttons — shared
+   ========================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 14px 28px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease, opacity 150ms ease;
+  text-decoration: none;
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--green-cta);
+  color: var(--white);
+  border-color: var(--green-cta);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--green-cta-hover);
+  border-color: var(--green-cta-hover);
+}
+
+.btn-ghost {
+  background: var(--white);
+  color: var(--primary);
+  border-color: var(--border-input);
+}
+.btn-ghost:hover {
+  border-color: var(--primary);
+}
+
+.btn .arrow {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+}
+
+/* ==========================================================
+   Step 1 — Tell us about your vehicle (form layout)
+   ========================================================== */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 64px;
+  align-items: start;
+}
+
+.form-intro .step-tag {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0 0 18px;
+}
+
+.form-intro h1 {
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-dark);
+  text-transform: uppercase;
+  margin: 0 0 18px;
+}
+
+.form-intro p {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+  max-width: 320px;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.field label .field-hint {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.field select,
+.field input[type="text"] {
+  width: 100%;
+  padding: 14px 18px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--text-dark);
+  background: var(--white);
+  border: 1px solid var(--border-input);
+  border-radius: 6px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: border-color 150ms ease;
+}
+
+.field input[type="text"] {
+  cursor: text;
+}
+
+.field select:focus,
+.field input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.field select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='none' stroke='%231F5AAD' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M1 1l5 5 5-5'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+  padding-right: 44px;
+}
+
+.field select:disabled {
+  background-color: #F4F6F9;
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.field select option:disabled {
+  color: #C0C8D2;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+/* ==========================================================
+   Responsive
+   ========================================================== */
+@media (max-width: 800px) {
+  .card { padding: 28px 22px; }
+  .form-grid { grid-template-columns: 1fr; gap: 28px; }
+  .form-intro h1 { font-size: 24px; }
+  .stepper { max-width: 100%; }
+  .step-circle { width: 30px; height: 30px; }
+  .headline { font-size: 18px; }
+}
