@@ -15,3 +15,12 @@ data/submissions.jsonl
 # PHP
 vendor/
 composer.lock
+
+# Design source files (kept locally only)
+*.cdr
+*.ai
+*.psd
+*.fig
+*.sketch
+*.afdesign
+*.xd
