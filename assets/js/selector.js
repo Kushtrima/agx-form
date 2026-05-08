@@ -54,6 +54,7 @@
     damagePanel.classList.add("open");
     renderSelectedChips();
   }
+  updateContinueState();
 
   rotatePrev.addEventListener("click", () => rotate(-1));
   rotateNext.addEventListener("click", () => rotate(1));
@@ -91,6 +92,12 @@
         e.stopPropagation();
         selectWindow(el);
       });
+      el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          selectWindow(el);
+        }
+      });
     });
   }
 
@@ -110,6 +117,11 @@
     syncPanelFromDamage(damages[id]);
     saveDamages();           // persists + applies highlights
     renderSelectedChips();
+
+    // If the damage panel is below the fold, gently bring it into view.
+    requestAnimationFrame(() => {
+      damagePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
   }
 
   function syncPanelFromDamage(rec) {
@@ -221,13 +233,31 @@
   const resetCancel  = document.getElementById("reset-cancel");
   const resetConfirm = document.getElementById("reset-confirm");
 
+  let lastFocusedElement = null;
+
   function openResetModal() {
+    const count = Object.keys(damages).length;
+    const countEl = document.getElementById("reset-modal-count");
+    const nounEl  = document.getElementById("reset-modal-noun");
+    if (countEl) countEl.textContent = count;
+    if (nounEl)  nounEl.textContent  = count === 1 ? "glass" : "glasses";
+    lastFocusedElement = document.activeElement;
     resetModal.hidden = false;
-    requestAnimationFrame(() => resetModal.classList.add("open"));
+    requestAnimationFrame(() => {
+      resetModal.classList.add("open");
+      resetCancel.focus();    // start focus inside the modal
+    });
   }
   function closeResetModal() {
     resetModal.classList.remove("open");
-    setTimeout(() => { resetModal.hidden = true; }, 200);
+    setTimeout(() => {
+      resetModal.hidden = true;
+      // Return focus to the element that opened the modal.
+      if (lastFocusedElement && document.body.contains(lastFocusedElement)) {
+        lastFocusedElement.focus();
+      }
+      lastFocusedElement = null;
+    }, 200);
   }
 
   resetCancel.addEventListener("click", closeResetModal);
@@ -238,8 +268,27 @@
   resetModal.addEventListener("click", (e) => {
     if (e.target === resetModal) closeResetModal();
   });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && resetModal.classList.contains("open")) closeResetModal();
+
+  // Focus trap inside the reset modal
+  resetModal.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeResetModal();
+      return;
+    }
+    if (e.key !== "Tab") return;
+    const focusable = resetModal.querySelectorAll(
+      'button:not([disabled]):not([hidden]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last  = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   });
 
   function resetAll() {
@@ -269,6 +318,13 @@
     sessionStorage.setItem("agx_damages", JSON.stringify(damages));
     applyHighlights();
     renderSelectedChips();
+    updateContinueState();
+  }
+
+  function updateContinueState() {
+    const hasAny = Object.keys(damages).length > 0;
+    continueBtn.disabled = !hasAny;
+    continueBtn.title = hasAny ? "" : "Select at least one window first";
   }
 
   function loadDamages() {
@@ -280,31 +336,121 @@
   }
 
   /* ---------- Submit ---------- */
+  const submitModal     = document.getElementById("submit-modal");
+  const submitIcon      = submitModal.querySelector(".submit-icon");
+  const submitTitle     = document.getElementById("submit-modal-title");
+  const submitMessage   = document.getElementById("submit-modal-message");
+  const submitActionBox = document.getElementById("submit-modal-actions");
+  const submitClose     = document.getElementById("submit-cancel");
+  const submitRetry     = document.getElementById("submit-retry");
+  const submitDone      = document.getElementById("submit-done");
+
+  let submitInFlight = false;
+  let lastPayload    = null;
+
+  submitClose.addEventListener("click", closeSubmitModal);
+  submitDone.addEventListener("click", () => {
+    closeSubmitModal();
+    // After a successful submission, send the user back to Step 1 fresh.
+    window.location.href = "index.php";
+  });
+  submitRetry.addEventListener("click", () => {
+    if (lastPayload) sendPayload(lastPayload);
+  });
+  submitModal.addEventListener("click", (e) => {
+    if (e.target === submitModal && submitIcon.dataset.state !== "loading") closeSubmitModal();
+  });
+
+  function setSubmitState(state, opts) {
+    opts = opts || {};
+    submitIcon.dataset.state = state;
+    submitTitle.textContent   = opts.title || "";
+    submitMessage.textContent = opts.message || "";
+
+    submitClose.hidden = !opts.showClose;
+    submitRetry.hidden = !opts.showRetry;
+    submitDone.hidden  = !opts.showDone;
+    submitActionBox.hidden = !(opts.showClose || opts.showRetry || opts.showDone);
+  }
+
+  function openSubmitModal() {
+    submitModal.hidden = false;
+    requestAnimationFrame(() => submitModal.classList.add("open"));
+  }
+
+  function closeSubmitModal() {
+    submitModal.classList.remove("open");
+    setTimeout(() => { submitModal.hidden = true; }, 200);
+  }
+
+  function setContinueLoading(loading) {
+    continueBtn.classList.toggle("is-loading", loading);
+    continueBtn.disabled = loading || Object.keys(damages).length === 0;
+    const spinner = continueBtn.querySelector(".btn-spinner");
+    if (spinner) spinner.hidden = !loading;
+  }
+
   function submitAll() {
+    if (submitInFlight) return;            // double-submit guard
+    if (Object.keys(damages).length === 0) return;
+
     const vehicleRaw = sessionStorage.getItem("agx_vehicle");
     if (!vehicleRaw) {
       window.location.href = "index.php";
       return;
     }
-    const vehicle = JSON.parse(vehicleRaw);
+    let vehicle;
+    try { vehicle = JSON.parse(vehicleRaw); } catch (_) { vehicle = {}; }
     const payload = { vehicle: vehicle, damages: damages };
+    lastPayload = payload;
+    sendPayload(payload);
+  }
+
+  function sendPayload(payload) {
+    submitInFlight = true;
+    setContinueLoading(true);
+    setSubmitState("loading", {
+      title:   "Sending your request…",
+      message: "One moment while we save your glass selection."
+    });
+    openSubmitModal();
 
     fetch("submit.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     })
-      .then((r) => r.json())
+      .then((r) => r.json().catch(() => ({ ok: false })))
       .then((res) => {
+        submitInFlight = false;
+        setContinueLoading(false);
         if (res && res.ok) {
-          alert("Submission saved. Reference: " + res.id);
           sessionStorage.removeItem("agx_vehicle");
           sessionStorage.removeItem("agx_damages");
+          setSubmitState("success", {
+            title:   "Thanks! We received your request.",
+            message: "Reference: " + (res.id || "—") + ". We'll contact you shortly with the next steps.",
+            showDone: true
+          });
         } else {
-          alert("Submission failed.");
+          setSubmitState("error", {
+            title:   "Something went wrong.",
+            message: (res && res.error) || "Please try again in a moment.",
+            showClose: true,
+            showRetry: true
+          });
         }
       })
-      .catch(() => alert("Network error."));
+      .catch(() => {
+        submitInFlight = false;
+        setContinueLoading(false);
+        setSubmitState("error", {
+          title:   "Network error.",
+          message: "We couldn't reach the server. Check your connection and try again.",
+          showClose: true,
+          showRetry: true
+        });
+      });
   }
 
   /* ---------- Utility ---------- */

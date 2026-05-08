@@ -19,7 +19,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
   <circle class="car-body" cx="3185.1" cy="3139.97" r="689.69"/>
   <circle class="car-body" cx="11610.23" cy="3139.97" r="1018.28"/>
   <circle class="car-body" cx="11610.23" cy="3139.97" r="689.69"/>
-  <path id="right_front_door_window" class="glass-window" data-glass-name="Right Front Door Window" d="M6008.53 314.53c-1558.98,21.1 -2306.29,344.75 -2744.02,849.77l2857.85 -4.44 -113.83 -845.34z"/>
-  <path id="right_rear_door_window" class="glass-window" data-glass-name="Right Rear Door Window" d="M6321.4 314.53c1558.98,21.1 2042.7,425.52 3016.13,981.58l-2764.31 -136.24 -251.81 -845.34z"/>
+  <path id="right_front_door_window" class="glass-window" data-glass-name="Right Front Door Window" role="button" tabindex="0" aria-label="Right Front Door Window" d="M6008.53 314.53c-1558.98,21.1 -2306.29,344.75 -2744.02,849.77l2857.85 -4.44 -113.83 -845.34z"><title>Right Front Door Window</title></path>
+  <path id="right_rear_door_window" class="glass-window" data-glass-name="Right Rear Door Window" role="button" tabindex="0" aria-label="Right Rear Door Window" d="M6321.4 314.53c1558.98,21.1 2042.7,425.52 3016.13,981.58l-2764.31 -136.24 -251.81 -845.34z"><title>Right Rear Door Window</title></path>
  </g>
 </svg>

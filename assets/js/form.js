@@ -15,19 +15,32 @@
 
   let DATA = null;
 
-  fetch("data/vehicles.json")
-    .then((r) => r.json())
-    .then((data) => {
-      DATA = data;
-      populateYears(data.years);
-      populateBrands(Object.keys(data.brands));
-      populateBodyStyles(data.body_styles);
-      restoreFromStorage();
-      validate();
-    })
-    .catch(() => {
-      console.error("Failed to load data/vehicles.json");
-    });
+  // Vehicles data is inlined by the server into a <script type="application/json"> tag.
+  // Falling back to a fetch() for resilience if the inline payload is missing.
+  function loadInlineData() {
+    const tag = document.getElementById("agx-vehicles-data");
+    if (!tag) return null;
+    try { return JSON.parse(tag.textContent || "{}"); } catch (_) { return null; }
+  }
+
+  function bootstrap(data) {
+    DATA = data;
+    populateYears(data.years || []);
+    populateBrands(Object.keys(data.brands || {}));
+    populateBodyStyles(data.body_styles || []);
+    restoreFromStorage();
+    validate();
+  }
+
+  const inline = loadInlineData();
+  if (inline && inline.years) {
+    bootstrap(inline);
+  } else {
+    fetch("data/vehicles.json")
+      .then((r) => r.json())
+      .then(bootstrap)
+      .catch(() => console.error("Failed to load data/vehicles.json"));
+  }
 
   function populateYears(years) {
     yearSel.innerHTML = '<option value="" selected disabled>Select Year</option>';

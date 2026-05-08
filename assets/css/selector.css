@@ -288,6 +288,13 @@
   gap: 14px;
 }
 
+/* Visible keyboard focus on glass windows */
+.car-view svg .glass-window:focus { outline: none; }
+.car-view svg .glass-window:focus-visible {
+  outline: 2px solid #FFB400;
+  outline-offset: 2px;
+}
+
 /* ==========================================================
    Modal — confirmation dialog
    ========================================================== */
@@ -336,6 +343,34 @@
   color: #D93B3B;
   margin-bottom: 14px;
 }
+
+/* ----- Submit-modal icon variants (loading / success / error) ----- */
+.submit-icon { background: rgba(31, 90, 173, 0.10); color: var(--primary); }
+.submit-icon[data-state="success"] { background: rgba(45, 168, 74, 0.12); color: var(--green-cta); }
+.submit-icon[data-state="error"]   { background: rgba(217, 59, 59, 0.10); color: #D93B3B; }
+.submit-icon > svg { display: none; }
+.submit-icon[data-state="loading"] > .state-loading { display: block; animation: spin 900ms linear infinite; }
+.submit-icon[data-state="success"] > .state-success { display: block; }
+.submit-icon[data-state="error"]   > .state-error   { display: block; }
+
+@keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+
+/* ----- Spinner inside the Continue button (during fetch) ----- */
+.btn-spinner {
+  display: none;
+  align-items: center;
+}
+.btn-spinner svg { animation: spin 900ms linear infinite; }
+.btn.is-loading .btn-label,
+.btn.is-loading .arrow { visibility: hidden; }
+.btn.is-loading .btn-spinner {
+  display: inline-flex;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.btn { position: relative; }
 
 .modal-title {
   font-size: 17px;

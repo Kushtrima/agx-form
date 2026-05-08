@@ -5,20 +5,38 @@
 * { box-sizing: border-box; }
 
 :root {
+  /* ---- Colors ---- */
   --bg-blue:        #1F5AAD;
   --bg-blue-deep:   #1B4F99;
   --primary:        #1F5AAD;
   --primary-dark:   #174584;
   --text-dark:      #1F5AAD;
-  --text-muted:     #7A8A9C;
+  --text-muted:     #647488;
   --border-light:   #E2E8EF;
   --border-input:   #D5DDE6;
-  --green-cta:      #2DA84A;
-  --green-cta-hover:#249341;
+  --green-cta:      #1E8639;
+  --green-cta-hover:#176E2D;
+  --danger:         #D93B3B;
+  --danger-hover:   #B92E2E;
   --glass-blue:     #C8DBED;
   --glass-green:    #B8E5B5;
   --white:          #FFFFFF;
   --shadow-card:    0 8px 32px rgba(0, 0, 0, 0.08);
+
+  /* ---- Spacing scale (use these instead of magic px values) ---- */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* ---- Radii ---- */
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
 }
 
 html, body {
@@ -58,6 +76,8 @@ html, body {
   max-width: 760px;
   margin: 0 auto 28px;
   position: relative;
+  padding: 0;
+  list-style: none;
 }
 
 .stepper::before {
@@ -182,13 +202,13 @@ html, body {
 }
 
 .btn-danger {
-  background: #D93B3B;
+  background: var(--danger);
   color: var(--white);
-  border-color: #D93B3B;
+  border-color: var(--danger);
 }
 .btn-danger:hover:not(:disabled) {
-  background: #B92E2E;
-  border-color: #B92E2E;
+  background: var(--danger-hover);
+  border-color: var(--danger-hover);
 }
 
 .btn .arrow {

@@ -2,25 +2,33 @@
 /**
  * Step 2 + 3 — Glass selector + damage panel (sedan MVP)
  */
-$bodyCategory = 'sedan';
-$svgDir       = __DIR__ . '/vehicles/' . $bodyCategory;
-$views        = ['right', 'front', 'left', 'back', 'top'];
+require_once __DIR__ . '/includes/config.php';
 
-$damageOptions = [
-  ['value' => 'chip_crack',       'label' => 'Chip / Crack'],
-  ['value' => 'shattered_broken', 'label' => 'Shattered / Broken'],
-  ['value' => 'scratched',        'label' => 'Scratched'],
-  ['value' => 'leaking',          'label' => 'Leaking'],
-];
+// Single source of truth for damage types, features, body categories, glass IDs.
+$options = json_decode(@file_get_contents(AGX_DATA_DIR . '/options.json'), true) ?: [];
 
-$featureOptions = [
-  ['value' => 'heated_glass',  'label' => 'Heated Glass'],
-  ['value' => 'adas_cameras',  'label' => 'ADAS / Cameras'],
-  ['value' => 'acoustic_glass','label' => 'Acoustic Glass'],
-  ['value' => 'factory_tint',  'label' => 'Factory Tint'],
-  ['value' => 'rain_sensor',   'label' => 'Rain Sensor'],
-  ['value' => 'not_sure',      'label' => 'Not sure?'],
-];
+// Body category — whitelisted to prevent directory traversal once it becomes dynamic.
+$requestedBody = $_GET['body'] ?? 'sedan';
+$allowedBodies = $options['body_categories'] ?? ['sedan'];
+$bodyCategory  = in_array($requestedBody, $allowedBodies, true) ? $requestedBody : 'sedan';
+
+$svgDir = __DIR__ . '/vehicles/' . basename($bodyCategory);
+$views  = ['right', 'front', 'left', 'back', 'top'];
+
+$damageOptions  = $options['damage_types'] ?? [];
+$featureOptions = $options['features']     ?? [];
+
+/**
+ * Read an SVG file with a per-request static cache.
+ * Each unique path is read at most once per request.
+ */
+function agx_svg(string $path): string {
+    static $cache = [];
+    if (!array_key_exists($path, $cache)) {
+        $cache[$path] = is_file($path) ? (string)file_get_contents($path) : '';
+    }
+    return $cache[$path];
+}
 ?><!doctype html>
 <html lang="en">
 <head>
@@ -35,18 +43,18 @@ $featureOptions = [
 
     <h2 class="headline">Free Instant Estimates - No Commitment Required</h2>
 
-    <!-- Stepper: step 1 + 2 done -->
-    <div class="stepper" aria-label="Progress">
-      <div class="step-circle done">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,8.5 6.5,12 13,4"/></svg>
-      </div>
-      <div class="step-circle done" aria-current="step">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,8.5 6.5,12 13,4"/></svg>
-      </div>
-      <div class="step-circle pending"><svg viewBox="0 0 16 16" fill="currentColor"><polygon points="5,3 13,8 5,13"/></svg></div>
-      <div class="step-circle pending"><svg viewBox="0 0 16 16" fill="currentColor"><polygon points="5,3 13,8 5,13"/></svg></div>
-      <div class="step-circle pending"><svg viewBox="0 0 16 16" fill="currentColor"><polygon points="5,3 13,8 5,13"/></svg></div>
-    </div>
+    <!-- Stepper: step 1 done, step 2 current -->
+    <ol class="stepper" aria-label="Form progress">
+      <li class="step-circle done" aria-label="Step 1: Vehicle info, completed">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3,8.5 6.5,12 13,4"/></svg>
+      </li>
+      <li class="step-circle done" aria-current="step" aria-label="Step 2: Glass selector, current">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3,8.5 6.5,12 13,4"/></svg>
+      </li>
+      <li class="step-circle pending" aria-label="Step 3, not started"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><polygon points="5,3 13,8 5,13"/></svg></li>
+      <li class="step-circle pending" aria-label="Step 4, not started"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><polygon points="5,3 13,8 5,13"/></svg></li>
+      <li class="step-circle pending" aria-label="Step 5, not started"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><polygon points="5,3 13,8 5,13"/></svg></li>
+    </ol>
 
     <!-- Selector card -->
     <div class="card selector-card">
@@ -74,9 +82,7 @@ $featureOptions = [
           $isActive = ($i === 0) ? 'active' : '';
         ?>
           <div class="car-view <?= $isActive ?>" data-view="<?= $v ?>">
-            <?php if (is_file($svgPath)) {
-              echo file_get_contents($svgPath);
-            } ?>
+            <?= agx_svg($svgPath) ?>
           </div>
         <?php endforeach; ?>
       </div>
@@ -138,8 +144,14 @@ $featureOptions = [
             </span>
             Back
           </button>
-          <button type="button" id="continue-btn" class="btn btn-primary">
-            Continue
+          <button type="button" id="continue-btn" class="btn btn-primary" disabled>
+            <span class="btn-label">Continue</span>
+            <span class="btn-spinner" hidden>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <circle cx="12" cy="12" r="9" stroke-opacity="0.25"/>
+                <path d="M21 12a9 9 0 0 0 -9 -9"/>
+              </svg>
+            </span>
             <span class="arrow">
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="2" y1="8" x2="13" y2="8"/>
@@ -154,6 +166,32 @@ $featureOptions = [
 
   </div>
 
+  <!-- Submit status modal (loading / success / error) -->
+  <div id="submit-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="submit-modal-title" hidden>
+    <div class="modal-dialog">
+      <div class="modal-icon submit-icon" data-state="loading">
+        <svg class="state-loading" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <circle cx="12" cy="12" r="9" stroke-opacity="0.25"/>
+          <path d="M21 12a9 9 0 0 0 -9 -9"/>
+        </svg>
+        <svg class="state-success" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="5,12.5 10,17.5 19,7"/>
+        </svg>
+        <svg class="state-error" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="6" y1="6" x2="18" y2="18"/>
+          <line x1="18" y1="6" x2="6" y2="18"/>
+        </svg>
+      </div>
+      <h3 id="submit-modal-title" class="modal-title">Sending your request…</h3>
+      <p id="submit-modal-message" class="modal-message">One moment while we save your glass selection.</p>
+      <div class="modal-actions" id="submit-modal-actions" hidden>
+        <button type="button" id="submit-cancel" class="btn btn-ghost" hidden>Close</button>
+        <button type="button" id="submit-retry" class="btn btn-primary" hidden>Try again</button>
+        <button type="button" id="submit-done" class="btn btn-primary" hidden>Done</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Reset confirmation modal -->
   <div id="reset-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title" hidden>
     <div class="modal-dialog">
@@ -163,7 +201,7 @@ $featureOptions = [
           <polyline points="21,3 21,8 16,8"/>
         </svg>
       </div>
-      <h3 id="reset-modal-title" class="modal-title">Reset all selected glasses?</h3>
+      <h3 id="reset-modal-title" class="modal-title">Reset <span id="reset-modal-count">all</span> selected <span id="reset-modal-noun">glasses</span>?</h3>
       <p class="modal-message">This will clear every glass you've marked along with its damage type and features. This cannot be undone.</p>
       <div class="modal-actions">
         <button type="button" id="reset-cancel" class="btn btn-ghost">Cancel</button>

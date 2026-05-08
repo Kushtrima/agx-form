@@ -1,0 +1,28 @@
+{
+  "damage_types": [
+    { "value": "chip_crack",       "label": "Chip / Crack" },
+    { "value": "shattered_broken", "label": "Shattered / Broken" },
+    { "value": "scratched",        "label": "Scratched" },
+    { "value": "leaking",          "label": "Leaking" }
+  ],
+  "features": [
+    { "value": "heated_glass",   "label": "Heated Glass" },
+    { "value": "adas_cameras",   "label": "ADAS / Cameras" },
+    { "value": "acoustic_glass", "label": "Acoustic Glass" },
+    { "value": "factory_tint",   "label": "Factory Tint" },
+    { "value": "rain_sensor",    "label": "Rain Sensor" },
+    { "value": "not_sure",       "label": "Not sure?" }
+  ],
+  "body_categories": ["sedan"],
+  "glasses_by_body": {
+    "sedan": [
+      "front_windshield",
+      "rear_window",
+      "right_front_door_window",
+      "right_rear_door_window",
+      "left_front_door_window",
+      "left_rear_door_window",
+      "sunroof_glass"
+    ]
+  }
+}

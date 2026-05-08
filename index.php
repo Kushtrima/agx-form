@@ -2,6 +2,8 @@
 /**
  * Step 1 — Vehicle information form
  */
+require_once __DIR__ . '/includes/config.php';
+$vehiclesJson = @file_get_contents(AGX_DATA_DIR . '/vehicles.json') ?: '{}';
 ?><!doctype html>
 <html lang="en">
 <head>
@@ -16,15 +18,15 @@
     <h2 class="headline">Free Instant Estimates - No Commitment Required</h2>
 
     <!-- Stepper -->
-    <div class="stepper" aria-label="Progress">
-      <div class="step-circle done" aria-current="step">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,8.5 6.5,12 13,4"/></svg>
-      </div>
-      <div class="step-circle pending"><svg viewBox="0 0 16 16" fill="currentColor"><polygon points="5,3 13,8 5,13"/></svg></div>
-      <div class="step-circle pending"><svg viewBox="0 0 16 16" fill="currentColor"><polygon points="5,3 13,8 5,13"/></svg></div>
-      <div class="step-circle pending"><svg viewBox="0 0 16 16" fill="currentColor"><polygon points="5,3 13,8 5,13"/></svg></div>
-      <div class="step-circle pending"><svg viewBox="0 0 16 16" fill="currentColor"><polygon points="5,3 13,8 5,13"/></svg></div>
-    </div>
+    <ol class="stepper" aria-label="Form progress">
+      <li class="step-circle done" aria-current="step" aria-label="Step 1: Vehicle info, current">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3,8.5 6.5,12 13,4"/></svg>
+      </li>
+      <li class="step-circle pending" aria-label="Step 2, not started"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><polygon points="5,3 13,8 5,13"/></svg></li>
+      <li class="step-circle pending" aria-label="Step 3, not started"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><polygon points="5,3 13,8 5,13"/></svg></li>
+      <li class="step-circle pending" aria-label="Step 4, not started"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><polygon points="5,3 13,8 5,13"/></svg></li>
+      <li class="step-circle pending" aria-label="Step 5, not started"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><polygon points="5,3 13,8 5,13"/></svg></li>
+    </ol>
 
     <!-- Form card -->
     <div class="card glow">
@@ -91,6 +93,7 @@
 
   </div>
 
+  <script type="application/json" id="agx-vehicles-data"><?= $vehiclesJson ?></script>
   <script src="assets/js/form.js"></script>
 </body>
 </html>
