@@ -24,3 +24,6 @@ composer.lock
 *.sketch
 *.afdesign
 *.xd
+
+# Private notes / specs (kept locally only)
+plan.md

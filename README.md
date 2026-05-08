@@ -39,7 +39,6 @@ agx-form/
 ├── index.php              Step 1 — vehicle info form
 ├── selector.php           Step 2 — glass selector + damage panel
 ├── submit.php             POST endpoint that saves the submission
-├── plan.md                Original product spec
 │
 ├── assets/
 │   ├── css/
