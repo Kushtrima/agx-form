@@ -16,3 +16,8 @@ define('AGX_DB_HOST', getenv('AGX_DB_HOST') ?: 'localhost');
 define('AGX_DB_NAME', getenv('AGX_DB_NAME') ?: 'agx_form');
 define('AGX_DB_USER', getenv('AGX_DB_USER') ?: 'root');
 define('AGX_DB_PASS', getenv('AGX_DB_PASS') ?: '');
+
+// Admin login. Override in production via env vars.
+// Default credentials are a deliberate placeholder — change these before going live.
+define('AGX_ADMIN_USER', getenv('AGX_ADMIN_USER') ?: 'admin');
+define('AGX_ADMIN_PASS', getenv('AGX_ADMIN_PASS') ?: 'change-me');

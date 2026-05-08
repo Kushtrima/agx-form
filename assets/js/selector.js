@@ -39,6 +39,11 @@
   const removeBtn     = document.getElementById("remove-selected");
   const damageGroup   = document.getElementById("damage-group");
   const featuresGroup = document.getElementById("features-group");
+  const serviceGroup  = document.getElementById("service-group");
+  const notesInput    = document.getElementById("notes-input");
+  const notesCount    = document.getElementById("notes-count");
+  const photoInput    = document.getElementById("photo-input");
+  const photoList     = document.getElementById("photo-list");
   const continueBtn   = document.getElementById("continue-btn");
   const backBtn       = document.getElementById("back-btn");
   const resetBtn      = document.getElementById("reset-btn");
@@ -65,6 +70,15 @@
 
   bindPillGroup(damageGroup, "damage_type", true);   // single-select
   bindPillGroup(featuresGroup, "features", false);   // multi-select
+  bindPillGroup(serviceGroup, "service_type", true); // single-select
+
+  // Notes textarea — update counter + persist per glass
+  notesInput.addEventListener("input", () => {
+    notesCount.textContent = notesInput.value.length;
+    if (!activeGlassId || !damages[activeGlassId]) return;
+    damages[activeGlassId].notes = notesInput.value;
+    saveDamages();
+  });
 
   selectedChips.addEventListener("click", onChipClick);
 
@@ -107,7 +121,12 @@
     activeGlassId = id;
 
     if (!damages[id]) {
-      damages[id] = { name, damage_type: null, features: [] };
+      damages[id] = { name, damage_type: null, features: [], service_type: null, notes: "", photos: [] };
+    } else {
+      // Backfill new fields for damage records saved before service/notes/photos existed.
+      if (damages[id].service_type === undefined) damages[id].service_type = null;
+      if (damages[id].notes        === undefined) damages[id].notes        = "";
+      if (!Array.isArray(damages[id].photos))     damages[id].photos       = [];
     }
 
     selectedName.textContent = name;
@@ -131,6 +150,87 @@
     featuresGroup.querySelectorAll(".pill").forEach((p) => {
       p.classList.toggle("active", rec.features.includes(p.dataset.value));
     });
+    serviceGroup.querySelectorAll(".pill").forEach((p) => {
+      p.classList.toggle("active", rec.service_type === p.dataset.value);
+    });
+    notesInput.value = rec.notes || "";
+    notesCount.textContent = notesInput.value.length;
+    renderPhotos(rec.photos || []);
+  }
+
+  /* ---------- Photo upload ---------- */
+  photoInput.addEventListener("change", () => {
+    const file = photoInput.files[0];
+    photoInput.value = "";   // allow re-selecting the same file
+    if (!file || !activeGlassId || !damages[activeGlassId]) return;
+    uploadPhoto(file);
+  });
+
+  function renderPhotos(photos) {
+    photoList.innerHTML = "";
+    photos.forEach((p, idx) => {
+      const thumb = document.createElement("div");
+      thumb.className = "photo-thumb" + (p.uploading ? " is-uploading" : "") + (p.error ? " has-error" : "");
+      if (p.url || p.preview) {
+        const img = document.createElement("img");
+        img.src = p.url || p.preview;
+        img.alt = p.name || "Damage photo";
+        thumb.appendChild(img);
+      }
+      const x = document.createElement("button");
+      x.type = "button";
+      x.className = "photo-thumb-remove";
+      x.setAttribute("aria-label", "Remove photo");
+      x.textContent = "×";
+      x.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (!activeGlassId || !damages[activeGlassId]) return;
+        damages[activeGlassId].photos.splice(idx, 1);
+        saveDamages();
+        renderPhotos(damages[activeGlassId].photos);
+      });
+      thumb.appendChild(x);
+      photoList.appendChild(thumb);
+    });
+  }
+
+  function uploadPhoto(file) {
+    const rec = damages[activeGlassId];
+    const photoEntry = { name: file.name, size: file.size, uploading: true, preview: null, url: null };
+
+    // Show an immediate preview (data URL).
+    const reader = new FileReader();
+    reader.onload = () => {
+      photoEntry.preview = reader.result;
+      renderPhotos(rec.photos);
+    };
+    reader.readAsDataURL(file);
+
+    rec.photos.push(photoEntry);
+    renderPhotos(rec.photos);
+
+    const fd = new FormData();
+    fd.append("photo", file);
+
+    fetch("upload.php", { method: "POST", body: fd })
+      .then((r) => r.json().catch(() => ({ ok: false })))
+      .then((res) => {
+        photoEntry.uploading = false;
+        if (res && res.ok && res.url) {
+          photoEntry.url = res.url;
+          photoEntry.preview = null;     // drop the heavy base64 once we have a server URL
+        } else {
+          photoEntry.error = res && res.error ? res.error : "Upload failed";
+        }
+        saveDamages();
+        renderPhotos(rec.photos);
+      })
+      .catch(() => {
+        photoEntry.uploading = false;
+        photoEntry.error = "Network error";
+        saveDamages();
+        renderPhotos(rec.photos);
+      });
   }
 
   /* ---------- Highlight state ----------
@@ -155,13 +255,15 @@
       if (!rec) return;
 
       if (single) {
-        rec.damage_type = (rec.damage_type === val) ? null : val;
+        // Toggle: clicking the active pill again deselects it.
+        rec[field] = (rec[field] === val) ? null : val;
         container.querySelectorAll(".pill").forEach((p) => {
-          p.classList.toggle("active", rec.damage_type === p.dataset.value);
+          p.classList.toggle("active", rec[field] === p.dataset.value);
         });
       } else {
-        const i = rec.features.indexOf(val);
-        if (i >= 0) rec.features.splice(i, 1); else rec.features.push(val);
+        if (!Array.isArray(rec[field])) rec[field] = [];
+        const i = rec[field].indexOf(val);
+        if (i >= 0) rec[field].splice(i, 1); else rec[field].push(val);
         pill.classList.toggle("active");
       }
       saveDamages();
@@ -220,6 +322,10 @@
       editingRow.hidden = true;
       damageGroup.querySelectorAll(".pill.active").forEach((p) => p.classList.remove("active"));
       featuresGroup.querySelectorAll(".pill.active").forEach((p) => p.classList.remove("active"));
+      serviceGroup.querySelectorAll(".pill.active").forEach((p) => p.classList.remove("active"));
+      notesInput.value = "";
+      notesCount.textContent = "0";
+      photoList.innerHTML = "";
     }
   }
 
@@ -308,6 +414,10 @@
     });
     damageGroup.querySelectorAll(".pill.active").forEach((p) => p.classList.remove("active"));
     featuresGroup.querySelectorAll(".pill.active").forEach((p) => p.classList.remove("active"));
+    serviceGroup.querySelectorAll(".pill.active").forEach((p) => p.classList.remove("active"));
+    notesInput.value = "";
+    notesCount.textContent = "0";
+    photoList.innerHTML = "";
     renderSelectedChips();
     currentViewIndex = 0;
     showView(VIEWS[0]);
@@ -315,7 +425,27 @@
 
   /* ---------- Persistence ---------- */
   function saveDamages() {
-    sessionStorage.setItem("agx_damages", JSON.stringify(damages));
+    // Strip transient photo fields (preview base64, uploading/error flags) before
+    // persisting to sessionStorage. Only photos with a server URL survive a refresh.
+    const slim = {};
+    Object.keys(damages).forEach((id) => {
+      const r = damages[id];
+      slim[id] = {
+        name:         r.name,
+        damage_type:  r.damage_type,
+        service_type: r.service_type || null,
+        features:     Array.isArray(r.features) ? r.features.slice() : [],
+        notes:        r.notes || "",
+        photos:       (Array.isArray(r.photos) ? r.photos : [])
+          .filter((p) => p && p.url)
+          .map((p) => ({ url: p.url, name: p.name || "", size: p.size || 0 })),
+      };
+    });
+    try {
+      sessionStorage.setItem("agx_damages", JSON.stringify(slim));
+    } catch (e) {
+      console.warn("[agx] sessionStorage quota exceeded; dropping photo previews.", e);
+    }
     applyHighlights();
     renderSelectedChips();
     updateContinueState();

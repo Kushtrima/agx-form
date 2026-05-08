@@ -17,6 +17,7 @@ $views  = ['right', 'front', 'left', 'back', 'top'];
 
 $damageOptions  = $options['damage_types'] ?? [];
 $featureOptions = $options['features']     ?? [];
+$serviceOptions = $options['service_types'] ?? [];
 
 /**
  * Read an SVG file with a per-request static cache.
@@ -119,6 +120,41 @@ function agx_svg(string $path): string {
             <?php foreach ($featureOptions as $opt): ?>
               <button type="button" class="pill" data-value="<?= htmlspecialchars($opt['value']) ?>"><?= htmlspecialchars($opt['label']) ?></button>
             <?php endforeach; ?>
+          </div>
+        </div>
+
+        <div class="panel-row">
+          <div class="panel-label">Service needed</div>
+          <div class="pill-group" id="service-group">
+            <?php foreach ($serviceOptions as $opt): ?>
+              <button type="button" class="pill" data-value="<?= htmlspecialchars($opt['value']) ?>"><?= htmlspecialchars(strtoupper($opt['label'])) ?></button>
+            <?php endforeach; ?>
+          </div>
+        </div>
+
+        <div class="panel-row">
+          <div class="panel-label">
+            Photos
+            <span class="sub">(optional — JPEG/PNG/WebP up to 6 MB)</span>
+          </div>
+          <div class="photo-wrap">
+            <label class="photo-add" for="photo-input">
+              <span class="photo-add-icon" aria-hidden="true">+</span>
+              <span class="photo-add-text">Add photo</span>
+            </label>
+            <input id="photo-input" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" hidden>
+            <div class="photo-list" id="photo-list"></div>
+          </div>
+        </div>
+
+        <div class="panel-row">
+          <div class="panel-label">
+            Notes
+            <span class="sub">(optional — details that help the technician)</span>
+          </div>
+          <div class="notes-wrap">
+            <textarea id="notes-input" class="notes-input" maxlength="500" rows="3" placeholder="e.g. crack started near the bottom-left corner after a stone hit yesterday"></textarea>
+            <div class="notes-counter"><span id="notes-count">0</span>/500</div>
           </div>
         </div>
 

@@ -11,9 +11,19 @@ Live demo: run locally (see below). Source: [github.com/Kushtrima/agx-form](http
 - **Step 1 — Vehicle info**: Year, Brand, Model, Body Style, optional VIN. Brand → Model is cascading.
 - **Step 2 — Glass selector**: 5 SVG views per body style (right, front, left, back, top/sunroof) with a single rotate control.
 - **Multi-glass selection**: click any window to mark damage; switch views and mark more glasses; a chip list shows everything selected.
-- **Per-glass options**: damage type (chip / shattered / scratched / leaking) and special features (heated, ADAS, acoustic, factory tint, rain sensor, not sure).
-- **Reset & Submit**: in-app modal confirms a destructive reset; final payload is POSTed as JSON to the backend.
-- **Persistence**: vehicle info and damage selections are kept in `sessionStorage`, so the page can be reloaded mid-flow without losing progress.
+- **Per-glass details**:
+  - Damage type (chip / shattered / scratched / leaking)
+  - Service needed (repair / replace / not sure)
+  - Special glass features (heated, ADAS, acoustic, factory tint, rain sensor, not sure)
+  - Optional **photo uploads** — JPEG/PNG/WebP/HEIC, up to 6 MB each, stored under `uploads/YYYY/MM/`
+  - Optional notes (max 500 chars, with live counter)
+- **In-app modals**:
+  - Reset confirms destruction with the count ("Reset 3 selected glasses?")
+  - Submit shows loading → success (with reference ID) / error (with retry)
+- **Continue button** is disabled until at least one glass is selected; shows a spinner during submit and blocks double-clicks.
+- **Persistence**: vehicle info and damage selections are kept in `sessionStorage`. Photos with a server URL survive page reloads; in-flight previews are dropped on reload.
+- **Accessibility**: clickable SVG glass paths are keyboard-focusable with semantic `<title>` + `aria-label`; Enter/Space activates them. Modals trap focus and return it to the trigger on close. Stepper uses semantic `<ol>/<li>` with `aria-current`.
+- **Admin view** at `/admin.php` (HTTP Basic auth) — table of submissions with expandable detail per glass, including photo thumbnails.
 
 The visual selector uses **body-style SVGs only**, not per-brand. BMW sedan, Mercedes sedan, and Audi sedan all share `vehicles/sedan/*.svg`.
 
@@ -38,7 +48,9 @@ No frameworks, no npm install — open in any PHP-capable host.
 agx-form/
 ├── index.php              Step 1 — vehicle info form
 ├── selector.php           Step 2 — glass selector + damage panel
-├── submit.php             POST endpoint that saves the submission
+├── submit.php             POST endpoint — saves the submission as JSON
+├── upload.php             POST endpoint — single-photo upload (multipart)
+├── admin.php              HTTP-Basic-auth admin list + detail view
 │
 ├── assets/
 │   ├── css/
@@ -58,6 +70,7 @@ agx-form/
 │
 ├── data/
 │   ├── vehicles.json      Years, brands → models, body styles
+│   ├── options.json       Damage types, features, service types, glasses-by-body whitelist
 │   └── submissions.jsonl  (created at runtime, gitignored)
 │
 ├── uploads/               Future: customer-uploaded damage photos (gitignored)
@@ -139,14 +152,22 @@ Currently the selector page reads `vehicles/sedan/*` directly. To support multip
   },
   "damages": {
     "right_front_door_window": {
-      "name":        "Right Front Door Window",
-      "damage_type": "chip_crack",
-      "features":    ["heated_glass", "rain_sensor"]
+      "name":         "Right Front Door Window",
+      "damage_type":  "chip_crack",
+      "service_type": "repair",
+      "features":     ["heated_glass", "rain_sensor"],
+      "notes":        "small chip near the bottom edge",
+      "photos":       [
+        { "url": "uploads/2026/05/photo_abc.jpg", "name": "IMG_001.jpg", "size": 234567 }
+      ]
     },
     "sunroof_glass": {
-      "name":        "Sunroof Glass",
-      "damage_type": "shattered_broken",
-      "features":    []
+      "name":         "Sunroof Glass",
+      "damage_type":  "shattered_broken",
+      "service_type": "replace",
+      "features":     [],
+      "notes":        "",
+      "photos":       []
     }
   }
 }
@@ -162,13 +183,30 @@ The record is appended to `data/submissions.jsonl` for now. Swap to a DB by fill
 
 ---
 
-## What's intentionally out of scope (MVP)
+## Admin view
+
+Visit `/admin.php` and authenticate with the credentials defined in `includes/config.php`.
+
+```bash
+# Override defaults via env vars before running:
+AGX_ADMIN_USER=alice AGX_ADMIN_PASS=secret php -S 127.0.0.1:8765
+```
+
+The page lists every submission newest-first, with an expandable per-row detail showing each glass, its damage/service/features/notes, and photo thumbnails (clickable to open full-size).
+
+The default credentials (`admin` / `change-me`) are a deliberate placeholder. Change them before any deployment.
+
+---
+
+## What's intentionally out of scope
 
 - Real 3D rotation
 - Per-brand SVGs
 - Automatic price calculation
 - AI damage detection
-- Multiple body styles (only sedan ships in v1)
+- Multiple body styles (only sedan ships today; combi/pickup/SUV slot in cleanly via the same SVG conventions)
+- Email notifications on submit
+- Persistent database (currently a JSONL log; swap in PDO/MySQL via `includes/db.php` when ready)
 
 These can be layered on without changing the data model — the IDs and JSON shape are designed to extend cleanly.
 

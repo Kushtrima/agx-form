@@ -28,10 +28,11 @@ if (!is_array($payload) || empty($payload['vehicle']) || empty($payload['damages
 
 // ---------- Load whitelists ----------
 $options = json_decode(@file_get_contents(AGX_DATA_DIR . '/options.json'), true) ?: [];
-$validDamageTypes = array_column($options['damage_types'] ?? [], 'value');
-$validFeatures    = array_column($options['features']     ?? [], 'value');
-$validBodies      = $options['body_categories']           ?? ['sedan'];
-$glassesByBody    = $options['glasses_by_body']           ?? [];
+$validDamageTypes  = array_column($options['damage_types']  ?? [], 'value');
+$validFeatures     = array_column($options['features']      ?? [], 'value');
+$validServiceTypes = array_column($options['service_types'] ?? [], 'value');
+$validBodies       = $options['body_categories']            ?? ['sedan'];
+$glassesByBody     = $options['glasses_by_body']            ?? [];
 
 $vehicles = json_decode(@file_get_contents(AGX_DATA_DIR . '/vehicles.json'), true) ?: [];
 $validYears  = array_map('strval', $vehicles['years'] ?? []);
@@ -111,11 +112,20 @@ foreach ($damagesIn as $glassId => $rec) {
 
     $name        = is_string($rec['name'] ?? null) ? substr($rec['name'], 0, 80) : $glassId;
     $damageType  = $rec['damage_type'] ?? null;
+    $serviceType = $rec['service_type'] ?? null;
     $featuresIn  = is_array($rec['features'] ?? null) ? $rec['features'] : [];
+    $notes       = is_string($rec['notes'] ?? null) ? substr(trim($rec['notes']), 0, 500) : '';
+    $photosIn    = is_array($rec['photos']   ?? null) ? $rec['photos']   : [];
 
     if ($damageType !== null && !in_array($damageType, $validDamageTypes, true)) {
         http_response_code(400);
         echo json_encode(['ok' => false, 'error' => 'Invalid damage type for ' . $glassId]);
+        exit;
+    }
+
+    if ($serviceType !== null && !in_array($serviceType, $validServiceTypes, true)) {
+        http_response_code(400);
+        echo json_encode(['ok' => false, 'error' => 'Invalid service type for ' . $glassId]);
         exit;
     }
 
@@ -126,10 +136,31 @@ foreach ($damagesIn as $glassId => $rec) {
         }
     }
 
+    // Validate photo URLs: must be relative paths under uploads/ that exist on disk.
+    $cleanPhotos = [];
+    foreach ($photosIn as $p) {
+        if (!is_array($p) || !is_string($p['url'] ?? null)) continue;
+        $url = $p['url'];
+        // Relative path only, no scheme, no parent traversal, must start with uploads/.
+        if (preg_match('#^uploads/[A-Za-z0-9_\-/\.]+$#', $url) !== 1) continue;
+        if (strpos($url, '..') !== false) continue;
+        $absolute = AGX_BASE_DIR . '/' . $url;
+        if (!is_file($absolute)) continue;
+        $cleanPhotos[] = [
+            'url'  => $url,
+            'name' => is_string($p['name'] ?? null) ? substr($p['name'], 0, 200) : '',
+            'size' => is_int($p['size'] ?? null)    ? max(0, (int)$p['size'])    : 0,
+        ];
+        if (count($cleanPhotos) >= 8) break;   // cap per-glass photos
+    }
+
     $cleanDamages[$glassId] = [
-        'name'        => $name,
-        'damage_type' => $damageType,
-        'features'    => $cleanFeatures,
+        'name'         => $name,
+        'damage_type'  => $damageType,
+        'service_type' => $serviceType,
+        'features'     => $cleanFeatures,
+        'notes'        => $notes,
+        'photos'       => $cleanPhotos,
     ];
 }
 

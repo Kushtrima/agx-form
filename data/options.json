@@ -13,6 +13,11 @@
     { "value": "rain_sensor",    "label": "Rain Sensor" },
     { "value": "not_sure",       "label": "Not sure?" }
   ],
+  "service_types": [
+    { "value": "repair",   "label": "Repair" },
+    { "value": "replace",  "label": "Replace" },
+    { "value": "not_sure", "label": "Not sure?" }
+  ],
   "body_categories": ["sedan"],
   "glasses_by_body": {
     "sedan": [
