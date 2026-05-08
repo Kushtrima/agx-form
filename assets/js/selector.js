@@ -41,6 +41,7 @@
   const featuresGroup = document.getElementById("features-group");
   const continueBtn   = document.getElementById("continue-btn");
   const backBtn       = document.getElementById("back-btn");
+  const resetBtn      = document.getElementById("reset-btn");
 
   let currentViewIndex = 0;
   // damages: { [glass_id]: { name, damage_type, features: [] } }
@@ -59,6 +60,7 @@
   removeBtn.addEventListener("click", removeActive);
   continueBtn.addEventListener("click", submitAll);
   backBtn.addEventListener("click", () => { window.location.href = "index.php"; });
+  resetBtn.addEventListener("click", resetAll);
 
   bindPillGroup(damageGroup, "damage_type", true);   // single-select
   bindPillGroup(featuresGroup, "features", false);   // multi-select
@@ -212,6 +214,54 @@
   function removeActive() {
     if (!activeGlassId) return;
     removeGlass(activeGlassId);
+  }
+
+  /* ---------- Reset everything ---------- */
+  const resetModal   = document.getElementById("reset-modal");
+  const resetCancel  = document.getElementById("reset-cancel");
+  const resetConfirm = document.getElementById("reset-confirm");
+
+  function openResetModal() {
+    resetModal.hidden = false;
+    requestAnimationFrame(() => resetModal.classList.add("open"));
+  }
+  function closeResetModal() {
+    resetModal.classList.remove("open");
+    setTimeout(() => { resetModal.hidden = true; }, 200);
+  }
+
+  resetCancel.addEventListener("click", closeResetModal);
+  resetConfirm.addEventListener("click", () => {
+    closeResetModal();
+    performReset();
+  });
+  resetModal.addEventListener("click", (e) => {
+    if (e.target === resetModal) closeResetModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && resetModal.classList.contains("open")) closeResetModal();
+  });
+
+  function resetAll() {
+    if (Object.keys(damages).length === 0) {
+      performReset();
+      return;
+    }
+    openResetModal();
+  }
+
+  function performReset() {
+    damages = {};
+    activeGlassId = null;
+    sessionStorage.removeItem("agx_damages");
+    document.querySelectorAll(".glass-window.selected, .glass-window.has-damage").forEach((el) => {
+      el.classList.remove("selected", "has-damage");
+    });
+    damageGroup.querySelectorAll(".pill.active").forEach((p) => p.classList.remove("active"));
+    featuresGroup.querySelectorAll(".pill.active").forEach((p) => p.classList.remove("active"));
+    renderSelectedChips();
+    currentViewIndex = 0;
+    showView(VIEWS[0]);
   }
 
   /* ---------- Persistence ---------- */

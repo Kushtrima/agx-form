@@ -55,16 +55,14 @@ $featureOptions = [
         <h2 id="view-title" class="view-title">RIGHT SIDE</h2>
         <div class="rotate-control">
           <span class="rotate-label">Rotate</span>
-          <button type="button" id="rotate-prev" class="rotate-btn" aria-label="Previous view">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="13" y1="8" x2="3" y2="8"/>
-              <polyline points="7,4 3,8 7,12"/>
+          <button type="button" id="rotate-prev" class="rotate-btn" aria-label="Rotate left">
+            <svg viewBox="0 0 6467.51 9524.01" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="6467.51,4782.6 0,9524.01 1313.17,4762 0,0"/>
             </svg>
           </button>
-          <button type="button" id="rotate-next" class="rotate-btn" aria-label="Next view">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="3" y1="8" x2="13" y2="8"/>
-              <polyline points="9,4 13,8 9,12"/>
+          <button type="button" id="rotate-next" class="rotate-btn" aria-label="Rotate right">
+            <svg viewBox="0 0 6467.51 9524.01" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="6467.51,4782.6 0,9524.01 1313.17,4762 0,0"/>
             </svg>
           </button>
         </div>
@@ -121,28 +119,57 @@ $featureOptions = [
       </div>
 
       <div class="selector-actions">
-        <button type="button" id="back-btn" class="btn btn-ghost">
+        <button type="button" id="reset-btn" class="btn btn-text">
           <span class="arrow">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="13" y1="8" x2="3" y2="8"/>
-              <polyline points="7,4 3,8 7,12"/>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 8a6 6 0 1 1 -6-6 6.3 6.3 0 0 1 4.5 1.85L14 5.5"/>
+              <polyline points="14,2 14,5.5 10.5,5.5"/>
             </svg>
           </span>
-          Back
+          Reset
         </button>
-        <button type="button" id="continue-btn" class="btn btn-primary">
-          Continue
-          <span class="arrow">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="2" y1="8" x2="13" y2="8"/>
-              <polyline points="9,4 13,8 9,12"/>
-            </svg>
-          </span>
-        </button>
+        <div class="action-group">
+          <button type="button" id="back-btn" class="btn btn-ghost">
+            <span class="arrow">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="13" y1="8" x2="3" y2="8"/>
+                <polyline points="7,4 3,8 7,12"/>
+              </svg>
+            </span>
+            Back
+          </button>
+          <button type="button" id="continue-btn" class="btn btn-primary">
+            Continue
+            <span class="arrow">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="2" y1="8" x2="13" y2="8"/>
+                <polyline points="9,4 13,8 9,12"/>
+              </svg>
+            </span>
+          </button>
+        </div>
       </div>
 
     </div>
 
+  </div>
+
+  <!-- Reset confirmation modal -->
+  <div id="reset-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title" hidden>
+    <div class="modal-dialog">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1 -9 -9c2.52 0 4.93 1 6.74 2.74L21 8"/>
+          <polyline points="21,3 21,8 16,8"/>
+        </svg>
+      </div>
+      <h3 id="reset-modal-title" class="modal-title">Reset all selected glasses?</h3>
+      <p class="modal-message">This will clear every glass you've marked along with its damage type and features. This cannot be undone.</p>
+      <div class="modal-actions">
+        <button type="button" id="reset-cancel" class="btn btn-ghost">Cancel</button>
+        <button type="button" id="reset-confirm" class="btn btn-danger">Reset</button>
+      </div>
+    </div>
   </div>
 
   <script src="assets/js/selector.js"></script>
