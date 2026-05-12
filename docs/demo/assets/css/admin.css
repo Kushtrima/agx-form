@@ -1,0 +1,198 @@
+/* ==========================================================
+   Admin view — submissions list
+   ========================================================== */
+
+body { background: #F4F6F9; color: var(--text-dark); }
+
+.admin-wrap {
+  max-width: 1200px;
+}
+
+.admin-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 16px 0 24px;
+}
+
+.admin-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  margin: 0;
+}
+
+.admin-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.empty-state {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  box-shadow: var(--shadow-card);
+}
+
+/* ----- Submissions table ----- */
+.submissions-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.submissions-table thead th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 14px 18px;
+  background: #F8FAFD;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.submissions-table td {
+  padding: 14px 18px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: middle;
+}
+
+.submissions-table tr:last-child td { border-bottom: none; }
+
+.cell-id {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.vin {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.row-detail td {
+  padding: 0 18px 24px;
+  background: #FBFCFE;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.btn-toggle {
+  font-size: 12px;
+  padding: 6px 14px;
+}
+
+/* ----- Service summary inside the detail row ----- */
+.service-summary {
+  font-size: 13px;
+  color: var(--text-dark);
+  padding: 12px 14px;
+  background: #F2F6FB;
+  border-radius: 6px;
+  margin: 16px 0 6px;
+}
+.service-summary strong { color: var(--primary); font-weight: 600; margin-right: 4px; }
+.service-summary a { color: var(--primary); text-decoration: none; }
+.service-summary a:hover { text-decoration: underline; }
+.contact-summary { background: #FFF6E6; border: 1px solid #F3DEB0; }
+.contact-summary strong { color: #8A5A00; }
+.contact-notes { margin-top: 6px; color: var(--text-muted); font-size: 12px; }
+
+/* ----- Detail grid ----- */
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+  padding: 16px 0 4px;
+}
+
+.glass-card {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.glass-card > header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.glass-card h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  margin: 0;
+}
+
+.glass-card code {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.glass-card dl {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 4px 12px;
+  margin: 0 0 10px;
+}
+
+.glass-card dt {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 600;
+  padding-top: 1px;
+}
+
+.glass-card dd {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-dark);
+}
+
+.glass-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.glass-photos a {
+  display: block;
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+}
+
+.glass-photos img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 700px) {
+  .submissions-table thead { display: none; }
+  .submissions-table tr { display: block; padding: 12px 16px; border-bottom: 1px solid var(--border-light); }
+  .submissions-table td { display: block; padding: 4px 0; border: none; }
+  .row-detail td { padding-top: 0; }
+}

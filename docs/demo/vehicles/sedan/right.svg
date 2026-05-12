@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" version="1.1"
+viewBox="0 0 13751.16 4166.32"
+preserveAspectRatio="xMidYMid meet"
+style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <style type="text/css"><![CDATA[
+    .car-body { fill:none; stroke:#1F5AAD; stroke-width:1.5; vector-effect:non-scaling-stroke; stroke-miterlimit:10; }
+    .glass-window { fill:#C8DBED; stroke:#1F5AAD; stroke-width:1.5; vector-effect:non-scaling-stroke; stroke-miterlimit:10; cursor:pointer; transition:fill 180ms ease; pointer-events:all; }
+    .glass-window:hover { fill:#B8E5B5; }
+    .glass-window.has-damage { fill:#B8E5B5; }
+    .glass-window.selected { fill:#B8E5B5; }
+  ]]></style>
+ </defs>
+ <g id="Layer_x0020_1">
+  <path class="car-body" d="M302.39 1295.17l1379.86 -303.8 428.31 -127.48 1305.61 -491.31c278.71,-104.91 466.47,-160.97 762.2,-216.35 1025.33,-192.02 2050.68,-192.61 3076,-29.85 508.92,80.77 629.88,135.55 1083.85,361.99l1228.61 612.87c1127.82,94.71 2225.97,257.2 3279.59,521.53 229,57.44 525.66,110.12 716,250.26 223.96,164.93 178.87,301.83 173.27,566.5 -8.02,378.81 -63.31,745.84 -207.49,1090.61l-979.53 5.76c51.42,-121.72 79.85,-255.51 79.85,-395.94 0,-562.39 -455.9,-1018.28 -1018.28,-1018.28 -562.39,0 -1018.28,455.9 -1018.28,1018.28 0,144.69 30.24,282.29 84.64,406.93l-6347.78 37.3c-76.36,1.15 -152.49,1.89 -228.34,2.26 65.88,-134.82 102.91,-286.32 102.91,-446.49 0,-562.39 -455.9,-1018.28 -1018.28,-1018.28 -562.39,0 -1018.28,455.9 -1018.28,1018.28 0,135.32 26.46,264.45 74.38,382.57 -696.48,-50.15 -1375.24,-126.83 -2043.08,-219.95 -302.17,-632.73 -226.93,-1306.24 104.28,-2007.43z"/>
+  <circle class="car-body" cx="3185.1" cy="3139.97" r="1018.28"/>
+  <circle class="car-body" cx="3185.1" cy="3139.97" r="689.69"/>
+  <circle class="car-body" cx="11610.23" cy="3139.97" r="1018.28"/>
+  <circle class="car-body" cx="11610.23" cy="3139.97" r="689.69"/>
+  <path id="right_front_door_window" class="glass-window" data-glass-name="Right Front Door Window" role="button" tabindex="0" aria-label="Right Front Door Window" d="M6008.53 314.53c-1558.98,21.1 -2306.29,344.75 -2744.02,849.77l2857.85 -4.44 -113.83 -845.34z"><title>Right Front Door Window</title></path>
+  <path id="right_rear_door_window" class="glass-window" data-glass-name="Right Rear Door Window" role="button" tabindex="0" aria-label="Right Rear Door Window" d="M6321.4 314.53 C7210.0,326.5 7749.3,463.1 8229.0,681.3 L8375.39,1242.79 L6573.22,1159.87 Z"><title>Right Rear Door Window</title></path>
+  <path id="right_quarter_window" class="glass-window" data-glass-name="Right Vent Glass" role="button" tabindex="0" aria-label="Right Vent Glass" d="M8229.0 681.3 C8590.9,845.9 8919.0,1057.0 9337.53,1296.11 L8375.39,1242.79 Z"><title>Right Vent Glass</title></path>
+ </g>
+</svg>

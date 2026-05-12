@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AGX — Select Damaged Glass</title>
+    <link rel="stylesheet" href="assets/css/form.css">
+  <link rel="stylesheet" href="assets/css/selector.css">
+</head>
+<body>
+  <div class="page-wrap">
+
+    <h2 class="headline">Free Instant Estimates - No Commitment Required</h2>
+
+    <!-- Stepper: step 1 done, step 2 current -->
+    <ol class="stepper" aria-label="Form progress">
+      <li class="step-circle done" aria-label="Step 1: Vehicle info, completed">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3,8.5 6.5,12 13,4"/></svg>
+      </li>
+      <li class="step-circle done" aria-current="step" aria-label="Step 2: Glass selector, current">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3,8.5 6.5,12 13,4"/></svg>
+      </li>
+      <li class="step-circle pending" aria-label="Step 3, not started"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><polygon points="5,3 13,8 5,13"/></svg></li>
+      <li class="step-circle pending" aria-label="Step 4, not started"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><polygon points="5,3 13,8 5,13"/></svg></li>
+      <li class="step-circle pending" aria-label="Step 5, not started"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><polygon points="5,3 13,8 5,13"/></svg></li>
+    </ol>
+
+    <!-- Selector card -->
+    <div class="card selector-card">
+
+      <div class="header-row">
+        <h2 id="view-title" class="view-title">RIGHT SIDE</h2>
+        <div class="rotate-control">
+          <span class="rotate-label">Rotate</span>
+          <button type="button" id="rotate-prev" class="rotate-btn" aria-label="Rotate left">
+            <svg viewBox="0 0 6467.51 9524.01" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="6467.51,4782.6 0,9524.01 1313.17,4762 0,0"/>
+            </svg>
+          </button>
+          <button type="button" id="rotate-next" class="rotate-btn" aria-label="Rotate right">
+            <svg viewBox="0 0 6467.51 9524.01" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="6467.51,4782.6 0,9524.01 1313.17,4762 0,0"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="car-stage" class="car-stage">
+                  <div class="car-view active" data-view="right">
+            <?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" version="1.1"
+viewBox="0 0 13751.16 4166.32"
+preserveAspectRatio="xMidYMid meet"
+style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <style type="text/css"><![CDATA[
+    .car-body { fill:none; stroke:#1F5AAD; stroke-width:1.5; vector-effect:non-scaling-stroke; stroke-miterlimit:10; }
+    .glass-window { fill:#C8DBED; stroke:#1F5AAD; stroke-width:1.5; vector-effect:non-scaling-stroke; stroke-miterlimit:10; cursor:pointer; transition:fill 180ms ease; pointer-events:all; }
+    .glass-window:hover { fill:#B8E5B5; }
+    .glass-window.has-damage { fill:#B8E5B5; }
+    .glass-window.selected { fill:#B8E5B5; }
+  ]]></style>
+ </defs>
+ <g id="Layer_x0020_1">
+  <path class="car-body" d="M302.39 1295.17l1379.86 -303.8 428.31 -127.48 1305.61 -491.31c278.71,-104.91 466.47,-160.97 762.2,-216.35 1025.33,-192.02 2050.68,-192.61 3076,-29.85 508.92,80.77 629.88,135.55 1083.85,361.99l1228.61 612.87c1127.82,94.71 2225.97,257.2 3279.59,521.53 229,57.44 525.66,110.12 716,250.26 223.96,164.93 178.87,301.83 173.27,566.5 -8.02,378.81 -63.31,745.84 -207.49,1090.61l-979.53 5.76c51.42,-121.72 79.85,-255.51 79.85,-395.94 0,-562.39 -455.9,-1018.28 -1018.28,-1018.28 -562.39,0 -1018.28,455.9 -1018.28,1018.28 0,144.69 30.24,282.29 84.64,406.93l-6347.78 37.3c-76.36,1.15 -152.49,1.89 -228.34,2.26 65.88,-134.82 102.91,-286.32 102.91,-446.49 0,-562.39 -455.9,-1018.28 -1018.28,-1018.28 -562.39,0 -1018.28,455.9 -1018.28,1018.28 0,135.32 26.46,264.45 74.38,382.57 -696.48,-50.15 -1375.24,-126.83 -2043.08,-219.95 -302.17,-632.73 -226.93,-1306.24 104.28,-2007.43z"/>
+  <circle class="car-body" cx="3185.1" cy="3139.97" r="1018.28"/>
+  <circle class="car-body" cx="3185.1" cy="3139.97" r="689.69"/>
+  <circle class="car-body" cx="11610.23" cy="3139.97" r="1018.28"/>
+  <circle class="car-body" cx="11610.23" cy="3139.97" r="689.69"/>
+  <path id="right_front_door_window" class="glass-window" data-glass-name="Right Front Door Window" role="button" tabindex="0" aria-label="Right Front Door Window" d="M6008.53 314.53c-1558.98,21.1 -2306.29,344.75 -2744.02,849.77l2857.85 -4.44 -113.83 -845.34z"><title>Right Front Door Window</title></path>
+  <path id="right_rear_door_window" class="glass-window" data-glass-name="Right Rear Door Window" role="button" tabindex="0" aria-label="Right Rear Door Window" d="M6321.4 314.53 C7210.0,326.5 7749.3,463.1 8229.0,681.3 L8375.39,1242.79 L6573.22,1159.87 Z"><title>Right Rear Door Window</title></path>
+  <path id="right_quarter_window" class="glass-window" data-glass-name="Right Vent Glass" role="button" tabindex="0" aria-label="Right Vent Glass" d="M8229.0 681.3 C8590.9,845.9 8919.0,1057.0 9337.53,1296.11 L8375.39,1242.79 Z"><title>Right Vent Glass</title></path>
+ </g>
+</svg>
+          </div>
+                  <div class="car-view " data-view="front">
+            <?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" version="1.1"
+viewBox="0 0 977.83 660.94"
+preserveAspectRatio="xMidYMid meet"
+style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <style type="text/css"><![CDATA[
+    .car-body { fill:none; stroke:#1F5AAD; stroke-width:1.5; vector-effect:non-scaling-stroke; stroke-miterlimit:10; }
+    .glass-window { fill:#C8DBED; stroke:#1F5AAD; stroke-width:1.5; vector-effect:non-scaling-stroke; stroke-miterlimit:10; cursor:pointer; transition:fill 180ms ease; pointer-events:all; }
+    .glass-window:hover { fill:#B8E5B5; }
+    .glass-window.has-damage { fill:#B8E5B5; }
+    .glass-window.selected { fill:#B8E5B5; }
+  ]]></style>
+ </defs>
+ <g id="Layer_x0020_1">
+  <path class="car-body" d="M242.38 19.74c81.74,-11.52 163.48,-16.17 245.21,-18.33l0 -0.07 1.32 0.03 1.32 -0.03 0 0.07c81.73,2.16 163.47,6.81 245.21,18.33 21.73,5.94 37.54,16.59 48.6,30.99 35.57,40.87 57.9,95.75 81.1,138.11l0 -22.32c7.38,-25.77 67.64,-28.64 87.24,-2 28.41,38.58 -39.74,46.11 -73.54,47.37 4.55,6.9 9.23,13.17 14.13,18.63l48.03 51.65c25.28,27.19 27.29,22.62 31.57,59.81 7.55,65.47 3.77,145.36 -7,234.16 -1.68,2.81 -3.49,5.41 -5.48,7.73l0 31.71c0,24.23 -19.82,44.06 -44.06,44.06l-47.67 0c-24.23,0 -44.06,-19.82 -44.06,-44.06l0 -7.39c-112.36,10.39 -223.77,17.44 -334.07,20.69l0 0.08 -1.32 -0.04 -1.32 0.04 0 -0.08c-110.39,-3.25 -221.88,-10.31 -334.33,-20.71l0 7.41c0,24.23 -19.82,44.06 -44.06,44.06l-47.67 0c-24.23,0 -44.06,-19.82 -44.06,-44.06l0 -32.02c-1.88,-2.25 -3.61,-4.73 -5.22,-7.43 -10.77,-88.8 -14.55,-168.69 -7,-234.16 4.28,-37.19 6.28,-32.62 31.57,-59.81l48.03 -51.65c4.9,-5.45 9.57,-11.71 14.12,-18.61 -33.61,-1.2 -102.62,-8.62 -74.06,-47.4 19.61,-26.64 79.86,-23.77 87.24,2l0 23.3c23.39,-42.49 45.79,-97.9 81.63,-139.09 11.06,-14.4 26.87,-25.04 48.6,-30.99z"/>
+  <path id="front_windshield" class="glass-window" data-glass-name="Windshield" role="button" tabindex="0" aria-label="Windshield" d="M246.94 41.49c1.22,-0.17 2.46,-0.24 3.69,-0.35 159.62,-15.25 312.78,-15.15 469.43,-0.35 0.82,0.08 1.65,0.16 2.47,0.23 22.48,2.11 37.1,11.56 48.09,24.34 0.37,0.43 0.68,0.93 1.01,1.39 26.66,36.96 49.62,75.82 65.81,116.01 -232.65,-7.49 -465.29,-8.39 -697.94,0 16.94,-37.8 36.23,-75.3 60.75,-112.15 0.57,-0.86 1.1,-1.76 1.73,-2.59 11.03,-14.32 25.49,-23.9 44.96,-26.54z"><title>Windshield</title></path>
+  <path class="car-body" d="M238.91 346.62l222.56 0c2,14.94 14.8,26.46 30.28,26.46 15.48,0 28.28,-11.52 30.28,-26.46l222.55 0c6.61,0 12.02,5.41 12.02,12.02l0 48.94c0,33.53 -27.43,60.95 -60.95,60.95l-407.8 0c-33.53,0 -60.95,-27.43 -60.95,-60.95l0 -48.94c0,-6.61 5.41,-12.02 12.02,-12.02z"/>
+  <circle class="car-body" cx="491.75" cy="342.52" r="30.56"/>
+  <path id="right_mirror_glass" class="glass-window" data-glass-name="Right Side Mirror" role="button" tabindex="0" aria-label="Right Side Mirror" d="M99.75 203.67c-26.35,-0.92 -88.54,-6.59 -66.16,-36.25 15.36,-20.37 62.59,-18.18 68.37,1.53 1.43,12.1 1.38,22.96 -2.22,34.72z"><title>Right Side Mirror</title></path>
+  <path id="left_mirror_glass" class="glass-window" data-glass-name="Left Side Mirror" role="button" tabindex="0" aria-label="Left Side Mirror" d="M876.93 203.67c26.35,-0.92 88.54,-6.59 66.16,-36.25 -15.36,-20.37 -62.59,-18.18 -68.37,1.53 -1.43,12.1 -1.38,22.96 2.22,34.72z"><title>Left Side Mirror</title></path>
+ </g>
+</svg>
+          </div>
+                  <div class="car-view " data-view="left">
+            <?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" version="1.1"
+viewBox="0 0 13750.9 4166.25"
+preserveAspectRatio="xMidYMid meet"
+style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <style type="text/css"><![CDATA[
+    .car-body { fill:none; stroke:#1F5AAD; stroke-width:1.5; vector-effect:non-scaling-stroke; stroke-miterlimit:10; }
+    .glass-window { fill:#C8DBED; stroke:#1F5AAD; stroke-width:1.5; vector-effect:non-scaling-stroke; stroke-miterlimit:10; cursor:pointer; transition:fill 180ms ease; pointer-events:all; }
+    .glass-window:hover { fill:#B8E5B5; }
+    .glass-window.has-damage { fill:#B8E5B5; }
+    .glass-window.selected { fill:#B8E5B5; }
+    .driver-figure { fill:#9BA8B8; fill-rule:nonzero; pointer-events:none; }
+  ]]></style>
+ </defs>
+ <g id="Layer_x0020_1">
+  <path class="car-body" d="M13448.51 1295.14l-1379.83 -303.79 -428.3 -127.48 -1305.58 -491.3c-278.7,-104.9 -466.46,-160.97 -762.18,-216.34 -1025.31,-192.01 -2050.64,-192.61 -3075.94,-29.85 -508.91,80.77 -629.86,135.54 -1083.83,361.99l-1228.59 612.86c-1127.8,94.71 -2225.93,257.2 -3279.52,521.52 -228.99,57.44 -525.65,110.12 -715.99,250.26 -223.96,164.92 -178.86,301.82 -173.27,566.49 8.02,378.8 63.31,745.82 207.49,1090.59l979.51 5.76c-51.42,-121.72 -79.85,-255.5 -79.85,-395.93 0,-562.37 455.89,-1018.26 1018.26,-1018.26 562.37,0 1018.26,455.89 1018.26,1018.26 0,144.69 -30.24,282.28 -84.64,406.92l6347.66 37.3c76.36,1.15 152.48,1.89 228.33,2.26 -65.88,-134.82 -102.9,-286.32 -102.9,-446.48 0,-562.37 455.89,-1018.26 1018.26,-1018.26 562.37,0 1018.26,455.89 1018.26,1018.26 0,135.32 -26.46,264.44 -74.38,382.56 696.47,-50.15 1375.22,-126.83 2043.05,-219.94 302.16,-632.72 226.93,-1306.21 -104.28,-2007.39z"/>
+  <circle class="car-body" cx="10565.86" cy="3139.91" r="1018.26"/>
+  <circle class="car-body" cx="10565.86" cy="3139.91" r="689.67"/>
+  <circle class="car-body" cx="2140.88" cy="3139.91" r="1018.26"/>
+  <circle class="car-body" cx="2140.88" cy="3139.91" r="689.67"/>
+  <path id="left_front_door_window" class="glass-window" data-glass-name="Left Front Door Window" role="button" tabindex="0" aria-label="Left Front Door Window" d="M7742.48 314.52c1558.95,21.1 2306.24,344.74 2743.96,849.76l-2857.79 -4.44 113.83 -845.32z"><title>Left Front Door Window</title></path>
+  <path id="left_rear_door_window" class="glass-window" data-glass-name="Left Rear Door Window" role="button" tabindex="0" aria-label="Left Rear Door Window" d="M7429.62 314.52 C6541.0,326.5 6001.8,463.1 5522.1,681.3 L5375.67,1242.77 L7177.81,1159.84 Z"><title>Left Rear Door Window</title></path>
+  <path id="left_quarter_window" class="glass-window" data-glass-name="Left Vent Glass" role="button" tabindex="0" aria-label="Left Vent Glass" d="M5522.1 681.3 C5160.2,845.9 4832.1,1057.0 4413.55,1296.08 L5375.67,1242.77 Z"><title>Left Vent Glass</title></path>
+  <g class="driver-figure" id="driver_figure" aria-hidden="true">
+   <path d="M6401.5 1198.1c1.03,-6 2.69,-11.96 4.99,-17.84 18.64,-47.66 72.33,-71.26 120.01,-52.63l146.16 57.03 150.4 -115.3c18.34,-18.15 39.96,-33.58 64.89,-44.79 111.92,-50.4 243.58,-0.55 294.01,111.39l1.79 3.97 -5.94 19.91 -776.31 38.25z"/>
+   <path d="M6847.11 986.03c-126.9,54.84 -274.17,-3.42 -329.09,-130.35 -54.82,-126.83 3.45,-274.17 130.36,-329.09 126.86,-54.9 274.22,3.55 329.11,130.35 54.94,126.94 -3.53,274.3 -130.38,329.09z"/>
+  </g>
+ </g>
+</svg>
+          </div>
+                  <div class="car-view " data-view="back">
+            <?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" version="1.1"
+viewBox="0 0 981.05 662.25"
+preserveAspectRatio="xMidYMid meet"
+style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <style type="text/css"><![CDATA[
+    .car-body { fill:none; stroke:#1F5AAD; stroke-width:1.5; vector-effect:non-scaling-stroke; stroke-miterlimit:10; }
+    .glass-window { fill:#C8DBED; stroke:#1F5AAD; stroke-width:1.5; vector-effect:non-scaling-stroke; stroke-miterlimit:10; cursor:pointer; transition:fill 180ms ease; pointer-events:all; }
+    .glass-window:hover { fill:#B8E5B5; }
+    .glass-window.has-damage { fill:#B8E5B5; }
+    .glass-window.selected { fill:#B8E5B5; }
+  ]]></style>
+ </defs>
+ <g id="Layer_x0020_1">
+  <path class="car-body" d="M185.57 28.13c-18.92,13.66 -26.3,29.18 -37.92,48.47l-58.84 97.64c-25.09,50.79 -49.85,40.06 -67.47,101.85 -20.36,71.37 -24.13,140.27 -16.08,207.41 -3.15,28.74 2.95,49.28 16.9,64.22l0 70.23c0,23.64 19.35,42.99 42.99,42.99l51.26 0c23.64,0 42.99,-19.35 42.99,-42.99l0 -29.5c11.08,0.98 22.64,1.86 34.66,2.71 181.31,12.87 411.66,12.87 592.97,0 14.31,-1.02 27.98,-2.07 40.96,-3.28l0 30.07c0,23.64 19.35,42.99 42.99,42.99l51.26 0c23.64,0 42.99,-19.35 42.99,-42.99l0 -78.2c9.41,-14.06 13.22,-32.3 10.59,-56.25 8.05,-67.13 4.28,-136.03 -16.08,-207.41 -17.62,-61.79 -42.38,-51.06 -67.47,-101.85l-58.84 -97.64c-11.62,-19.29 -19,-34.81 -37.92,-48.47 -55.63,-40.15 -566.83,-31.09 -609.91,0z"/>
+  <path id="rear_window" class="glass-window" data-glass-name="Rear Window" role="button" tabindex="0" aria-label="Rear Window" d="M847.33 167.62c-228.86,-18.5 -463.29,-19.49 -704.25,0l35.69 -101.14c4.23,-12.87 12.3,-20.62 23.8,-23.8 193.32,-17.7 382.78,-17.75 566.67,0 17.63,1.17 30.26,7.31 37.92,19.33l40.16 105.6z"><title>Rear Window</title></path>
+  <line class="car-body" x1="248.84" y1="307.87" x2="722.26" y2="307.87"/>
+ </g>
+</svg>
+          </div>
+                  <div class="car-view " data-view="top">
+            <?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" version="1.1"
+viewBox="0 0 13581.08 4403.06"
+preserveAspectRatio="xMidYMid meet"
+style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <style type="text/css"><![CDATA[
+    .car-body { fill:none; stroke:#1F5AAD; stroke-width:1.5; vector-effect:non-scaling-stroke; stroke-miterlimit:10; }
+    .glass-window { fill:#C8DBED; stroke:#1F5AAD; stroke-width:1.5; vector-effect:non-scaling-stroke; stroke-miterlimit:10; cursor:pointer; transition:fill 180ms ease; pointer-events:all; }
+    .glass-window:hover { fill:#B8E5B5; }
+    .glass-window.has-damage { fill:#B8E5B5; }
+    .glass-window.selected { fill:#B8E5B5; }
+    /* The second-panel overlay — shown only when the customer picks
+       "Dual / Panoramic" as the sunroof type. Non-interactive (the click
+       still belongs to the underlying sunroof_glass rect). */
+    .sunroof-divider {
+      fill: rgba(31, 90, 173, 0.06);
+      stroke: #1F5AAD;
+      stroke-width: 1.5;
+      vector-effect: non-scaling-stroke;
+      stroke-miterlimit: 10;
+      pointer-events: none;
+      display: none;
+    }
+    .sunroof-divider.show { display: block; }
+  ]]></style>
+ </defs>
+ <g id="Layer_x0020_1">
+  <!-- Side mirrors (visible from top, protruding from the body) -->
+  <path class="car-body" d="M2262.44 8.11l698.25 0c130.29,0 236.86,106.64 236.86,236.86l0 27.7 -1171.97 0 0 -27.7c0,-130.29 106.58,-236.86 236.86,-236.86z"/>
+  <path class="car-body" d="M10788.63 8.11l698.25 0c130.29,0 236.86,106.64 236.86,236.86l0 27.7 -1171.97 0 0 -27.7c0,-130.29 106.58,-236.86 236.86,-236.86z"/>
+  <path class="car-body" d="M2262.44 4394.95l698.25 0c130.29,0 236.86,-106.64 236.86,-236.86l0 -27.7 -1171.97 0 0 27.7c0,130.29 106.58,236.86 236.86,236.86z"/>
+  <path class="car-body" d="M10788.63 4394.95l698.25 0c130.29,0 236.86,-106.64 236.86,-236.86l0 -27.7 -1171.97 0 0 27.7c0,130.29 106.58,236.86 236.86,236.86z"/>
+
+  <!-- Body silhouette (top view) -->
+  <path class="car-body" d="M13572.97 1994.25l0 413.8c-97.6,1284.29 -446.51,1787.79 -1319.98,1709.94l-2042.71 1.38 -136.23 209.73c-85.9,98.8 -154.42,76 -215.32,0l82.04 -209.51 -9078.13 3.7c-826.15,-65.47 -838.04,-477.03 -853.17,-1227.7l1.01 -1432.7c-22.44,-824.78 104.35,-1106.96 837.43,-1190.21l9088.65 0 -77.82 -198.72c60.91,-76 129.43,-98.8 215.32,0l129.08 198.72 2036.94 0c1024.17,-72.71 1257.09,604.53 1332.9,1721.58z"/>
+
+  <!-- Sunroof — single clickable rect (the big rounded rectangle). -->
+  <rect id="sunroof_glass" class="glass-window" data-glass-name="Sunroof Glass" role="button" tabindex="0" aria-label="Sunroof Glass" x="2848.68" y="935.3" width="6678.17" height="2532.45" rx="228.87" ry="236.86"><title>Sunroof Glass</title></rect>
+
+  <!-- Second-panel overlay (hidden by default). JS adds the .show class
+       when sunroof_type === "dual" to indicate a panoramic / split sunroof. -->
+  <path id="sunroof_dual_divider" class="sunroof-divider" d="M3085.55 935.3l3065.75 0c130.29,0 236.86,106.61 236.86,236.86l0 2058.73c0,130.25 -106.61,236.86 -236.86,236.86l-3065.75 0c-130.25,0 -236.86,-106.58 -236.86,-236.86l0 -2058.73c0,-130.29 106.58,-236.86 236.86,-236.86z"/>
+ </g>
+</svg>
+          </div>
+              </div>
+
+      <!-- Damage panel (hidden until window clicked) -->
+      <div id="damage-panel" class="damage-panel">
+
+        <div class="selected-list" id="selected-list" hidden>
+          <span class="selected-list-label">Selected glasses:</span>
+          <div class="selected-chips" id="selected-chips"></div>
+        </div>
+
+        <div class="editing-row" id="editing-row" hidden>
+          <span class="editing-label">Editing:</span>
+          <span class="editing-name" id="selected-name">Window</span>
+          <button type="button" class="remove-x" id="remove-selected" aria-label="Remove this glass">×</button>
+        </div>
+
+        <div class="damage-grid" id="damage-grid">
+
+          <div class="damage-column">
+            <div class="panel-label">Type of Damage</div>
+            <div class="pill-group pill-group-column" id="damage-group">
+                              <button type="button" class="pill" data-value="chip_crack">CHIP / CRACK</button>
+                              <button type="button" class="pill" data-value="shattered_broken">SHATTERED / BROKEN</button>
+                              <button type="button" class="pill" data-value="scratched">SCRATCHED</button>
+                              <button type="button" class="pill" data-value="leaking">LEAKING</button>
+                          </div>
+          </div>
+
+          <div class="damage-column">
+            <div class="panel-label">
+              Special features on this glass
+              <span class="sub">(select all that apply)</span>
+            </div>
+            <div class="pill-group pill-group-column features" id="features-group">
+                              <button type="button" class="pill" data-value="heated_glass">Heated Glass</button>
+                              <button type="button" class="pill" data-value="adas_cameras">ADAS / Cameras</button>
+                              <button type="button" class="pill" data-value="acoustic_glass">Acoustic Glass</button>
+                              <button type="button" class="pill" data-value="factory_tint">Factory Tint</button>
+                              <button type="button" class="pill" data-value="rain_sensor">Rain Sensor</button>
+                              <button type="button" class="pill" data-value="not_sure">Not sure?</button>
+                          </div>
+          </div>
+
+          <div class="damage-column">
+            <div class="panel-label">Crack / chip size</div>
+            <div class="pill-group pill-group-column pill-group-stack" id="crack-size-group">
+                              <button type="button" class="pill pill-stack" data-value="small">
+                  <span class="pill-title">Small</span>
+                                      <span class="pill-sub">Quarter-sized or less</span>
+                                  </button>
+                              <button type="button" class="pill pill-stack" data-value="medium">
+                  <span class="pill-title">Medium</span>
+                                      <span class="pill-sub">Up to 6 inches</span>
+                                  </button>
+                              <button type="button" class="pill pill-stack" data-value="large">
+                  <span class="pill-title">Large</span>
+                                      <span class="pill-sub">Over 6 inches</span>
+                                  </button>
+                          </div>
+          </div>
+
+          <!-- 4th column — glass-specific options (conditional). Hidden by default;
+               JS reveals it when the active glass has options defined. -->
+          <div class="damage-column damage-column-glass-options" id="glass-options-column">
+            <div class="panel-label" id="glass-options-label">Glass style</div>
+            <div class="pill-group pill-group-column pill-group-stack" id="glass-options-group"></div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="selector-actions">
+        <button type="button" id="reset-btn" class="btn btn-text">
+          <span class="arrow">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 8a6 6 0 1 1 -6-6 6.3 6.3 0 0 1 4.5 1.85L14 5.5"/>
+              <polyline points="14,2 14,5.5 10.5,5.5"/>
+            </svg>
+          </span>
+          Reset
+        </button>
+        <div class="action-group">
+          <button type="button" id="back-btn" class="btn btn-ghost">
+            <span class="arrow">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="13" y1="8" x2="3" y2="8"/>
+                <polyline points="7,4 3,8 7,12"/>
+              </svg>
+            </span>
+            Back
+          </button>
+          <button type="button" id="continue-btn" class="btn btn-primary" disabled>
+            <span class="btn-label">Continue</span>
+            <span class="btn-spinner" hidden>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <circle cx="12" cy="12" r="9" stroke-opacity="0.25"/>
+                <path d="M21 12a9 9 0 0 0 -9 -9"/>
+              </svg>
+            </span>
+            <span class="arrow">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="2" y1="8" x2="13" y2="8"/>
+                <polyline points="9,4 13,8 9,12"/>
+              </svg>
+            </span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Reset confirmation modal -->
+  <div id="reset-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title" hidden>
+    <div class="modal-dialog">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1 -9 -9c2.52 0 4.93 1 6.74 2.74L21 8"/>
+          <polyline points="21,3 21,8 16,8"/>
+        </svg>
+      </div>
+      <h3 id="reset-modal-title" class="modal-title">Reset <span id="reset-modal-count">all</span> selected <span id="reset-modal-noun">glasses</span>?</h3>
+      <p class="modal-message">This will clear every glass you've marked along with its damage type and features. This cannot be undone.</p>
+      <div class="modal-actions">
+        <button type="button" id="reset-cancel" class="btn btn-ghost">Cancel</button>
+        <button type="button" id="reset-confirm" class="btn btn-danger">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/json" id="agx-glass-options-data">{"front_windshield":{"label":"Glass style","field":"glass_style","options":[{"value":"standard","label":"Standard","sub":"Single piece"},{"value":"split","label":"Split \/ bench style","sub":"Two-piece (older trucks)"}]},"rear_window":{"label":"Defrost","field":"rear_defrost","options":[{"value":"yes","label":"Yes","sub":"Lines embedded in glass"},{"value":"no","label":"No","sub":"Plain rear glass"},{"value":"not_sure","label":"Not sure","sub":"We'll verify on site"}]},"sunroof_glass":{"label":"Sunroof type","field":"sunroof_type","options":[{"value":"single","label":"Single","sub":"One panel"},{"value":"dual","label":"Dual \/ Panoramic","sub":"Two panels with divider"}]}}</script>
+  <script src="assets/js/selector.js"></script>
+</body>
+</html>

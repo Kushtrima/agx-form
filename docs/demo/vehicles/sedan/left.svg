@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" version="1.1"
+viewBox="0 0 13750.9 4166.25"
+preserveAspectRatio="xMidYMid meet"
+style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <style type="text/css"><![CDATA[
+    .car-body { fill:none; stroke:#1F5AAD; stroke-width:1.5; vector-effect:non-scaling-stroke; stroke-miterlimit:10; }
+    .glass-window { fill:#C8DBED; stroke:#1F5AAD; stroke-width:1.5; vector-effect:non-scaling-stroke; stroke-miterlimit:10; cursor:pointer; transition:fill 180ms ease; pointer-events:all; }
+    .glass-window:hover { fill:#B8E5B5; }
+    .glass-window.has-damage { fill:#B8E5B5; }
+    .glass-window.selected { fill:#B8E5B5; }
+    .driver-figure { fill:#9BA8B8; fill-rule:nonzero; pointer-events:none; }
+  ]]></style>
+ </defs>
+ <g id="Layer_x0020_1">
+  <path class="car-body" d="M13448.51 1295.14l-1379.83 -303.79 -428.3 -127.48 -1305.58 -491.3c-278.7,-104.9 -466.46,-160.97 -762.18,-216.34 -1025.31,-192.01 -2050.64,-192.61 -3075.94,-29.85 -508.91,80.77 -629.86,135.54 -1083.83,361.99l-1228.59 612.86c-1127.8,94.71 -2225.93,257.2 -3279.52,521.52 -228.99,57.44 -525.65,110.12 -715.99,250.26 -223.96,164.92 -178.86,301.82 -173.27,566.49 8.02,378.8 63.31,745.82 207.49,1090.59l979.51 5.76c-51.42,-121.72 -79.85,-255.5 -79.85,-395.93 0,-562.37 455.89,-1018.26 1018.26,-1018.26 562.37,0 1018.26,455.89 1018.26,1018.26 0,144.69 -30.24,282.28 -84.64,406.92l6347.66 37.3c76.36,1.15 152.48,1.89 228.33,2.26 -65.88,-134.82 -102.9,-286.32 -102.9,-446.48 0,-562.37 455.89,-1018.26 1018.26,-1018.26 562.37,0 1018.26,455.89 1018.26,1018.26 0,135.32 -26.46,264.44 -74.38,382.56 696.47,-50.15 1375.22,-126.83 2043.05,-219.94 302.16,-632.72 226.93,-1306.21 -104.28,-2007.39z"/>
+  <circle class="car-body" cx="10565.86" cy="3139.91" r="1018.26"/>
+  <circle class="car-body" cx="10565.86" cy="3139.91" r="689.67"/>
+  <circle class="car-body" cx="2140.88" cy="3139.91" r="1018.26"/>
+  <circle class="car-body" cx="2140.88" cy="3139.91" r="689.67"/>
+  <path id="left_front_door_window" class="glass-window" data-glass-name="Left Front Door Window" role="button" tabindex="0" aria-label="Left Front Door Window" d="M7742.48 314.52c1558.95,21.1 2306.24,344.74 2743.96,849.76l-2857.79 -4.44 113.83 -845.32z"><title>Left Front Door Window</title></path>
+  <path id="left_rear_door_window" class="glass-window" data-glass-name="Left Rear Door Window" role="button" tabindex="0" aria-label="Left Rear Door Window" d="M7429.62 314.52 C6541.0,326.5 6001.8,463.1 5522.1,681.3 L5375.67,1242.77 L7177.81,1159.84 Z"><title>Left Rear Door Window</title></path>
+  <path id="left_quarter_window" class="glass-window" data-glass-name="Left Vent Glass" role="button" tabindex="0" aria-label="Left Vent Glass" d="M5522.1 681.3 C5160.2,845.9 4832.1,1057.0 4413.55,1296.08 L5375.67,1242.77 Z"><title>Left Vent Glass</title></path>
+  <g class="driver-figure" id="driver_figure" aria-hidden="true">
+   <path d="M6401.5 1198.1c1.03,-6 2.69,-11.96 4.99,-17.84 18.64,-47.66 72.33,-71.26 120.01,-52.63l146.16 57.03 150.4 -115.3c18.34,-18.15 39.96,-33.58 64.89,-44.79 111.92,-50.4 243.58,-0.55 294.01,111.39l1.79 3.97 -5.94 19.91 -776.31 38.25z"/>
+   <path d="M6847.11 986.03c-126.9,54.84 -274.17,-3.42 -329.09,-130.35 -54.82,-126.83 3.45,-274.17 130.36,-329.09 126.86,-54.9 274.22,3.55 329.11,130.35 54.94,126.94 -3.53,274.3 -130.38,329.09z"/>
+  </g>
+ </g>
+</svg>
