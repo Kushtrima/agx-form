@@ -1,0 +1,16 @@
+# Render.com blueprint — auto-applied when the repo is connected.
+services:
+  - type: web
+    name: agx-form
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /index.php
+    envVars:
+      # Set this manually in the Render dashboard after the first deploy.
+      # admin.php refuses to serve unless this is changed from the default
+      # 'change-me' on non-localhost requests.
+      - key: AGX_ADMIN_PASS
+        sync: false
+      - key: AGX_ADMIN_USER
+        value: admin
