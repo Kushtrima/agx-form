@@ -9,11 +9,18 @@
 
   // Shared sessionStorage keys (mirrored across form.js / selector.js / service.js / contact.js)
   const STORAGE_KEYS = {
-    VEHICLE: STORAGE_KEYS.VEHICLE,
-    DAMAGES: STORAGE_KEYS.DAMAGES,
+    VEHICLE: "agx_vehicle",
+    DAMAGES: "agx_damages",
     SERVICE: "agx_service",
     CONTACT: "agx_contact",
   };
+
+  // Runtime detection — see form.js for explanation.
+  const IS_STATIC =
+    window.location.hostname.endsWith(".github.io") ||
+    window.location.pathname.endsWith(".html");
+  const PAGE_EXT = IS_STATIC ? ".html" : ".php";
+  function pageUrl(name) { return name + PAGE_EXT; }
 
   const VIEWS = ["right", "front", "left", "back", "top"];
   const VIEW_LABELS = {
@@ -96,7 +103,7 @@
   rotateNext.addEventListener("click", () => rotate(1));
   removeBtn.addEventListener("click", removeActive);
   continueBtn.addEventListener("click", submitAll);
-  backBtn.addEventListener("click", () => { window.location.href = "index.php"; });
+  backBtn.addEventListener("click", () => { window.location.href = pageUrl("index"); });
   resetBtn.addEventListener("click", resetAll);
 
   bindPillGroup(damageGroup, "damage_type", true);    // single-select
@@ -479,7 +486,7 @@
     sessionStorage.removeItem(STORAGE_KEYS.DAMAGES);
     sessionStorage.removeItem(STORAGE_KEYS.VEHICLE);
     // Send the user back to the starting page (Step 1 / vehicle form).
-    window.location.href = "index.php";
+    window.location.href = pageUrl("index");
   }
 
   /* ---------- Persistence ---------- */
@@ -564,11 +571,11 @@
   function submitAll() {
     if (Object.keys(damages).length === 0) return;
     if (!sessionStorage.getItem(STORAGE_KEYS.VEHICLE)) {
-      window.location.href = "index.php";
+      window.location.href = pageUrl("index");
       return;
     }
     saveDamages();
-    window.location.href = "service.php";
+    window.location.href = pageUrl("service");
   }
 
   /* ---------- Utility ---------- */

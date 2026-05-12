@@ -8,11 +8,18 @@
 
   // Shared sessionStorage keys (mirrored across form.js / selector.js / service.js / contact.js)
   const STORAGE_KEYS = {
-    VEHICLE: STORAGE_KEYS.VEHICLE,
-    DAMAGES: STORAGE_KEYS.DAMAGES,
-    SERVICE: STORAGE_KEYS.SERVICE,
-    CONTACT: STORAGE_KEYS.CONTACT,
+    VEHICLE: "agx_vehicle",
+    DAMAGES: "agx_damages",
+    SERVICE: "agx_service",
+    CONTACT: "agx_contact",
   };
+
+  // Runtime detection — see form.js for explanation.
+  const IS_STATIC =
+    window.location.hostname.endsWith(".github.io") ||
+    window.location.pathname.endsWith(".html");
+  const PAGE_EXT = IS_STATIC ? ".html" : ".php";
+  function pageUrl(name) { return name + PAGE_EXT; }
 
   const firstNameInput = document.getElementById("first-name");
   const lastNameInput  = document.getElementById("last-name");
@@ -76,11 +83,11 @@
   const vehicleRaw = sessionStorage.getItem(STORAGE_KEYS.VEHICLE);
   const damagesRaw = sessionStorage.getItem(STORAGE_KEYS.DAMAGES);
   const serviceRaw = sessionStorage.getItem(STORAGE_KEYS.SERVICE);
-  if (!vehicleRaw) { window.location.replace("index.php"); return; }
+  if (!vehicleRaw) { window.location.replace(pageUrl("index")); return; }
   if (!damagesRaw || Object.keys(JSON.parse(damagesRaw) || {}).length === 0) {
-    window.location.replace("selector.php"); return;
+    window.location.replace(pageUrl("selector")); return;
   }
-  if (!serviceRaw) { window.location.replace("service.php"); return; }
+  if (!serviceRaw) { window.location.replace(pageUrl("service")); return; }
 
   // Restore any previously-typed values.
   applyContactState();
@@ -97,7 +104,7 @@
     });
   });
 
-  backBtn.addEventListener("click", () => { window.location.href = "service.php"; });
+  backBtn.addEventListener("click", () => { window.location.href = pageUrl("service"); });
 
   // Styled reset confirmation (mirrors the selector page's pattern).
   let lastFocusedBeforeReset = null;
@@ -119,7 +126,7 @@
     sessionStorage.removeItem(STORAGE_KEYS.DAMAGES);
     sessionStorage.removeItem(STORAGE_KEYS.SERVICE);
     sessionStorage.removeItem(STORAGE_KEYS.CONTACT);
-    window.location.href = "index.php";
+    window.location.href = pageUrl("index");
   });
   function closeResetModal() {
     resetModal.classList.remove("open");
@@ -144,9 +151,9 @@
     e.preventDefault();
     const step = editLink.getAttribute("data-edit-step");
     closeReviewModal();
-    if (step === "vehicle") { window.location.href = "index.php";    return; }
-    if (step === "damages") { window.location.href = "selector.php"; return; }
-    if (step === "service") { window.location.href = "service.php";  return; }
+    if (step === "vehicle") { window.location.href = pageUrl("index");    return; }
+    if (step === "damages") { window.location.href = pageUrl("selector"); return; }
+    if (step === "service") { window.location.href = pageUrl("service");  return; }
     // step === "contact" — stay on this page; close the modal, focus the
     // first input so the user is right where they need to edit.
     setTimeout(() => {
@@ -164,7 +171,7 @@
   submitClose.addEventListener("click", closeSubmitModal);
   submitDone.addEventListener("click", () => {
     closeSubmitModal();
-    window.location.href = "index.php";
+    window.location.href = pageUrl("index");
   });
   submitRetry.addEventListener("click", submitAll);
   submitModal.addEventListener("click", (e) => {
@@ -403,11 +410,28 @@
     closeReviewModal();
     openSubmitModal();
 
-    fetch("submit.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    })
+    // On GitHub Pages there's no PHP backend, so short-circuit the network
+    // call with a fake "ok" response that looks identical to the real one.
+    // This lets the client click through the entire flow end-to-end without
+    // a server. The 800ms delay mimics a real round-trip so the loading
+    // state is actually visible.
+    const request = IS_STATIC
+      ? new Promise((resolve) => {
+          try { console.log("[AGX demo] payload that would be submitted:", payload); } catch (_) {}
+          setTimeout(() => resolve({
+            json: () => Promise.resolve({
+              ok: true,
+              id: "agx_demo_" + Math.random().toString(36).slice(2, 12)
+            })
+          }), 800);
+        })
+      : fetch("submit.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+    request
       .then((r) => r.json().catch(() => ({ ok: false })))
       .then((res) => {
         submitInFlight = false;

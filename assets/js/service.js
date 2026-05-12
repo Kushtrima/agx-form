@@ -10,11 +10,18 @@
 
   // Shared sessionStorage keys (mirrored across form.js / selector.js / service.js / contact.js)
   const STORAGE_KEYS = {
-    VEHICLE: STORAGE_KEYS.VEHICLE,
-    DAMAGES: STORAGE_KEYS.DAMAGES,
-    SERVICE: STORAGE_KEYS.SERVICE,
+    VEHICLE: "agx_vehicle",
+    DAMAGES: "agx_damages",
+    SERVICE: "agx_service",
     CONTACT: "agx_contact",
   };
+
+  // Runtime detection — see form.js for explanation.
+  const IS_STATIC =
+    window.location.hostname.endsWith(".github.io") ||
+    window.location.pathname.endsWith(".html");
+  const PAGE_EXT = IS_STATIC ? ".html" : ".php";
+  function pageUrl(name) { return name + PAGE_EXT; }
 
   const serviceModeGroup = document.getElementById("service-mode-group");
   const paymentModeGroup = document.getElementById("payment-mode-group");
@@ -33,11 +40,11 @@
   const vehicleRaw = sessionStorage.getItem(STORAGE_KEYS.VEHICLE);
   const damagesRaw = sessionStorage.getItem(STORAGE_KEYS.DAMAGES);
   if (!vehicleRaw) {
-    window.location.replace("index.php");
+    window.location.replace(pageUrl("index"));
     return;
   }
   if (!damagesRaw || Object.keys(JSON.parse(damagesRaw) || {}).length === 0) {
-    window.location.replace("selector.php");
+    window.location.replace(pageUrl("selector"));
     return;
   }
 
@@ -85,7 +92,7 @@
     onStateChange();
   });
 
-  backBtn.addEventListener("click", () => { window.location.href = "selector.php"; });
+  backBtn.addEventListener("click", () => { window.location.href = pageUrl("selector"); });
 
   // Reset everything (same destructive action as on selector page) — send user to Step 1.
   resetBtn.addEventListener("click", () => {
@@ -93,7 +100,7 @@
     sessionStorage.removeItem(STORAGE_KEYS.VEHICLE);
     sessionStorage.removeItem(STORAGE_KEYS.DAMAGES);
     sessionStorage.removeItem(STORAGE_KEYS.SERVICE);
-    window.location.href = "index.php";
+    window.location.href = pageUrl("index");
   });
 
   continueBtn.addEventListener("click", advanceToContact);
@@ -163,6 +170,6 @@
   function advanceToContact() {
     if (missingFields().length > 0) return;
     saveService();
-    window.location.href = "contact.php";
+    window.location.href = pageUrl("contact");
   }
 })();

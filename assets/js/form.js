@@ -6,11 +6,20 @@
 
   // Shared sessionStorage keys (mirrored in form.js / selector.js / service.js / contact.js)
   const STORAGE_KEYS = {
-    VEHICLE: STORAGE_KEYS.VEHICLE,
-    DAMAGES: STORAGE_KEYS.DAMAGES,
+    VEHICLE: "agx_vehicle",
+    DAMAGES: "agx_damages",
     SERVICE: "agx_service",
     CONTACT: "agx_contact",
   };
+
+  // Detect runtime: PHP server (URL has .php) vs static GitHub Pages
+  // (hostname is github.io or filename ends with .html). Used to route
+  // navigation links to the right file extension.
+  const IS_STATIC =
+    window.location.hostname.endsWith(".github.io") ||
+    window.location.pathname.endsWith(".html");
+  const PAGE_EXT = IS_STATIC ? ".html" : ".php";
+  function pageUrl(name) { return name + PAGE_EXT; }
 
   const yearSel  = document.getElementById("year");
   const brandSel = document.getElementById("brand");
@@ -123,7 +132,7 @@
       vin:        vinInput.value.trim()
     };
     sessionStorage.setItem(STORAGE_KEYS.VEHICLE, JSON.stringify(payload));
-    window.location.href = "selector.php";
+    window.location.href = pageUrl("selector");
   });
 
   cancelBtn.addEventListener("click", (e) => {
