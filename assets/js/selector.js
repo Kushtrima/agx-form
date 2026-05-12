@@ -7,6 +7,14 @@
 (function () {
   "use strict";
 
+  // Shared sessionStorage keys (mirrored across form.js / selector.js / service.js / contact.js)
+  const STORAGE_KEYS = {
+    VEHICLE: STORAGE_KEYS.VEHICLE,
+    DAMAGES: STORAGE_KEYS.DAMAGES,
+    SERVICE: "agx_service",
+    CONTACT: "agx_contact",
+  };
+
   const VIEWS = ["right", "front", "left", "back", "top"];
   const VIEW_LABELS = {
     right: "RIGHT SIDE",
@@ -20,9 +28,13 @@
   const GLASS_TO_VIEW = {
     right_front_door_window: "right",
     right_rear_door_window:  "right",
+    right_quarter_window:    "right",
     left_front_door_window:  "left",
     left_rear_door_window:   "left",
+    left_quarter_window:     "left",
     front_windshield:        "front",
+    left_mirror_glass:       "front",
+    right_mirror_glass:      "front",
     rear_window:             "back",
     sunroof_glass:           "top"
   };
@@ -39,11 +51,26 @@
   const removeBtn     = document.getElementById("remove-selected");
   const damageGroup   = document.getElementById("damage-group");
   const featuresGroup = document.getElementById("features-group");
-  const serviceGroup  = document.getElementById("service-group");
-  const notesInput    = document.getElementById("notes-input");
-  const notesCount    = document.getElementById("notes-count");
-  const photoInput    = document.getElementById("photo-input");
-  const photoList     = document.getElementById("photo-list");
+  const crackSizeGroup = document.getElementById("crack-size-group");
+  const damageGrid     = document.getElementById("damage-grid");
+  const glassOptsCol   = document.getElementById("glass-options-column");
+  const glassOptsLabel = document.getElementById("glass-options-label");
+  const glassOptsGroup = document.getElementById("glass-options-group");
+  // Notes + Photos sections are currently removed from the UI — keep the
+  // references null so any code that touches them no-ops cleanly. The data
+  // model still tolerates these fields if they reappear later.
+  const notesInput     = document.getElementById("notes-input");
+  const notesCount     = document.getElementById("notes-count");
+  const photoInput     = document.getElementById("photo-input");
+  const photoList      = document.getElementById("photo-list");
+
+  // Glass-specific extra options config, embedded from data/options.json.
+  let glassSpecificCfg = {};
+  try {
+    glassSpecificCfg = JSON.parse(
+      document.getElementById("agx-glass-options-data").textContent || "{}"
+    );
+  } catch (_) { glassSpecificCfg = {}; }
   const continueBtn   = document.getElementById("continue-btn");
   const backBtn       = document.getElementById("back-btn");
   const resetBtn      = document.getElementById("reset-btn");
@@ -58,6 +85,10 @@
   if (Object.keys(damages).length > 0) {
     damagePanel.classList.add("open");
     renderSelectedChips();
+    // Auto-activate the first stored glass so pill clicks are immediately
+    // interactive after a page reload. Without this, the panel is open but
+    // every pill handler bails on the !activeGlassId guard.
+    activateGlassById(Object.keys(damages)[0]);
   }
   updateContinueState();
 
@@ -68,17 +99,18 @@
   backBtn.addEventListener("click", () => { window.location.href = "index.php"; });
   resetBtn.addEventListener("click", resetAll);
 
-  bindPillGroup(damageGroup, "damage_type", true);   // single-select
-  bindPillGroup(featuresGroup, "features", false);   // multi-select
-  bindPillGroup(serviceGroup, "service_type", true); // single-select
+  bindPillGroup(damageGroup, "damage_type", true);    // single-select
+  bindPillGroup(featuresGroup, "features", false);    // multi-select
+  bindPillGroup(crackSizeGroup, "crack_size", true);  // single-select
 
-  // Notes textarea — update counter + persist per glass
-  notesInput.addEventListener("input", () => {
-    notesCount.textContent = notesInput.value.length;
-    if (!activeGlassId || !damages[activeGlassId]) return;
-    damages[activeGlassId].notes = notesInput.value;
-    saveDamages();
-  });
+  if (notesInput && notesCount) {
+    notesInput.addEventListener("input", () => {
+      notesCount.textContent = notesInput.value.length;
+      if (!activeGlassId || !damages[activeGlassId]) return;
+      damages[activeGlassId].notes = notesInput.value;
+      saveDamages();
+    });
+  }
 
   selectedChips.addEventListener("click", onChipClick);
 
@@ -121,12 +153,14 @@
     activeGlassId = id;
 
     if (!damages[id]) {
-      damages[id] = { name, damage_type: null, features: [], service_type: null, notes: "", photos: [] };
+      damages[id] = { name, damage_type: null, features: [], crack_size: null, notes: "", photos: [] };
     } else {
-      // Backfill new fields for damage records saved before service/notes/photos existed.
-      if (damages[id].service_type === undefined) damages[id].service_type = null;
-      if (damages[id].notes        === undefined) damages[id].notes        = "";
-      if (!Array.isArray(damages[id].photos))     damages[id].photos       = [];
+      // Backfill fields for damage records saved before they existed.
+      if (damages[id].crack_size === undefined) damages[id].crack_size = null;
+      if (damages[id].notes      === undefined) damages[id].notes      = "";
+      if (!Array.isArray(damages[id].photos))   damages[id].photos     = [];
+      // Drop any stale field from earlier versions.
+      if ("service_type" in damages[id]) delete damages[id].service_type;
     }
 
     selectedName.textContent = name;
@@ -150,88 +184,67 @@
     featuresGroup.querySelectorAll(".pill").forEach((p) => {
       p.classList.toggle("active", rec.features.includes(p.dataset.value));
     });
-    serviceGroup.querySelectorAll(".pill").forEach((p) => {
-      p.classList.toggle("active", rec.service_type === p.dataset.value);
+    crackSizeGroup.querySelectorAll(".pill").forEach((p) => {
+      p.classList.toggle("active", rec.crack_size === p.dataset.value);
     });
-    notesInput.value = rec.notes || "";
-    notesCount.textContent = notesInput.value.length;
-    renderPhotos(rec.photos || []);
+    if (notesInput) {
+      notesInput.value = rec.notes || "";
+      if (notesCount) notesCount.textContent = notesInput.value.length;
+    }
+    renderGlassSpecificColumn(rec);
   }
 
-  /* ---------- Photo upload ---------- */
-  photoInput.addEventListener("change", () => {
-    const file = photoInput.files[0];
-    photoInput.value = "";   // allow re-selecting the same file
-    if (!file || !activeGlassId || !damages[activeGlassId]) return;
-    uploadPhoto(file);
-  });
+  /* ---------- Glass-specific extra options (4th column) ---------- */
+  function renderGlassSpecificColumn(rec) {
+    const cfg = glassSpecificCfg[activeGlassId];
+    if (!cfg || !Array.isArray(cfg.options) || cfg.options.length === 0) {
+      damageGrid.classList.remove("has-glass-options");
+      glassOptsGroup.innerHTML = "";
+      return;
+    }
+    damageGrid.classList.add("has-glass-options");
+    glassOptsLabel.textContent = cfg.label || "";
+    glassOptsGroup.innerHTML = "";
+    const currentValue = rec[cfg.field] || null;
 
-  function renderPhotos(photos) {
-    photoList.innerHTML = "";
-    photos.forEach((p, idx) => {
-      const thumb = document.createElement("div");
-      thumb.className = "photo-thumb" + (p.uploading ? " is-uploading" : "") + (p.error ? " has-error" : "");
-      if (p.url || p.preview) {
-        const img = document.createElement("img");
-        img.src = p.url || p.preview;
-        img.alt = p.name || "Damage photo";
-        thumb.appendChild(img);
+    cfg.options.forEach((opt) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "pill pill-stack" + (currentValue === opt.value ? " active" : "");
+      btn.dataset.value = opt.value;
+      btn.dataset.field = cfg.field;
+      const title = document.createElement("span");
+      title.className = "pill-title";
+      title.textContent = opt.label;
+      btn.appendChild(title);
+      if (opt.sub) {
+        const sub = document.createElement("span");
+        sub.className = "pill-sub";
+        sub.textContent = opt.sub;
+        btn.appendChild(sub);
       }
-      const x = document.createElement("button");
-      x.type = "button";
-      x.className = "photo-thumb-remove";
-      x.setAttribute("aria-label", "Remove photo");
-      x.textContent = "×";
-      x.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (!activeGlassId || !damages[activeGlassId]) return;
-        damages[activeGlassId].photos.splice(idx, 1);
-        saveDamages();
-        renderPhotos(damages[activeGlassId].photos);
-      });
-      thumb.appendChild(x);
-      photoList.appendChild(thumb);
+      glassOptsGroup.appendChild(btn);
     });
   }
 
-  function uploadPhoto(file) {
-    const rec = damages[activeGlassId];
-    const photoEntry = { name: file.name, size: file.size, uploading: true, preview: null, url: null };
-
-    // Show an immediate preview (data URL).
-    const reader = new FileReader();
-    reader.onload = () => {
-      photoEntry.preview = reader.result;
-      renderPhotos(rec.photos);
-    };
-    reader.readAsDataURL(file);
-
-    rec.photos.push(photoEntry);
-    renderPhotos(rec.photos);
-
-    const fd = new FormData();
-    fd.append("photo", file);
-
-    fetch("upload.php", { method: "POST", body: fd })
-      .then((r) => r.json().catch(() => ({ ok: false })))
-      .then((res) => {
-        photoEntry.uploading = false;
-        if (res && res.ok && res.url) {
-          photoEntry.url = res.url;
-          photoEntry.preview = null;     // drop the heavy base64 once we have a server URL
-        } else {
-          photoEntry.error = res && res.error ? res.error : "Upload failed";
-        }
-        saveDamages();
-        renderPhotos(rec.photos);
-      })
-      .catch(() => {
-        photoEntry.uploading = false;
-        photoEntry.error = "Network error";
-        saveDamages();
-        renderPhotos(rec.photos);
-      });
-  }
+  // Click handler for the glass-specific column — single-select with no-deselect
+  // (same rule as the other single-select sections).
+  glassOptsGroup.addEventListener("click", (e) => {
+    const pill = e.target.closest(".pill");
+    if (!pill || !activeGlassId) return;
+    const cfg = glassSpecificCfg[activeGlassId];
+    if (!cfg) return;
+    const val   = pill.dataset.value;
+    const field = pill.dataset.field || cfg.field;
+    const rec   = damages[activeGlassId];
+    if (!rec) return;
+    if (rec[field] === val) return;   // already active → no-op
+    rec[field] = val;
+    glassOptsGroup.querySelectorAll(".pill").forEach((p) => {
+      p.classList.toggle("active", rec[field] === p.dataset.value);
+    });
+    saveDamages();
+  });
 
   /* ---------- Highlight state ----------
      - Active glass: green   (.selected)
@@ -243,9 +256,20 @@
       el.classList.toggle("selected", damaged && el.id === activeGlassId);
       el.classList.toggle("has-damage", damaged && el.id !== activeGlassId);
     });
+
+    // Reveal the second-panel divider on the top view when the customer has
+    // picked Dual / Panoramic for the sunroof; hide it otherwise.
+    const sunroofRec = damages.sunroof_glass;
+    const isDual = !!(sunroofRec && sunroofRec.sunroof_type === "dual");
+    document.querySelectorAll("#sunroof_dual_divider").forEach((el) => {
+      el.classList.toggle("show", isDual);
+    });
   }
 
-  /* ---------- Pill group handlers ---------- */
+  /* ---------- Pill group handlers ----------
+     Once a selection exists in a group, the user can SWITCH to another value
+     (single-select) or ADD more (multi-select) but cannot clear back to zero
+     by re-clicking. To wipe all choices, use the Reset button. */
   function bindPillGroup(container, field, single) {
     container.addEventListener("click", (e) => {
       const pill = e.target.closest(".pill");
@@ -255,16 +279,25 @@
       if (!rec) return;
 
       if (single) {
-        // Toggle: clicking the active pill again deselects it.
-        rec[field] = (rec[field] === val) ? null : val;
+        // Single-select: clicking the already-active pill is a no-op
+        // (can't deselect — to clear, use Reset).
+        if (rec[field] === val) return;
+        rec[field] = val;
         container.querySelectorAll(".pill").forEach((p) => {
           p.classList.toggle("active", rec[field] === p.dataset.value);
         });
       } else {
+        // Multi-select: free toggle — features can independently turn on/off,
+        // and the list is allowed to go back to empty.
         if (!Array.isArray(rec[field])) rec[field] = [];
         const i = rec[field].indexOf(val);
-        if (i >= 0) rec[field].splice(i, 1); else rec[field].push(val);
-        pill.classList.toggle("active");
+        if (i >= 0) {
+          rec[field].splice(i, 1);
+          pill.classList.remove("active");
+        } else {
+          rec[field].push(val);
+          pill.classList.add("active");
+        }
       }
       saveDamages();
     });
@@ -318,14 +351,48 @@
     if (activeGlassId === id) activeGlassId = null;
     saveDamages();
     renderSelectedChips();
-    if (!activeGlassId) {
+
+    const remaining = Object.keys(damages);
+    if (!activeGlassId && remaining.length > 0) {
+      // We just removed the editing glass but others are still selected — keep
+      // the panel interactive by promoting one of them.
+      activateGlassById(remaining[0]);
+    } else if (!activeGlassId) {
+      // No glasses left at all — collapse the editing state.
       editingRow.hidden = true;
       damageGroup.querySelectorAll(".pill.active").forEach((p) => p.classList.remove("active"));
       featuresGroup.querySelectorAll(".pill.active").forEach((p) => p.classList.remove("active"));
-      serviceGroup.querySelectorAll(".pill.active").forEach((p) => p.classList.remove("active"));
-      notesInput.value = "";
-      notesCount.textContent = "0";
-      photoList.innerHTML = "";
+      crackSizeGroup.querySelectorAll(".pill.active").forEach((p) => p.classList.remove("active"));
+      damageGrid.classList.remove("has-glass-options");
+      glassOptsGroup.innerHTML = "";
+      if (notesInput) notesInput.value = "";
+      if (notesCount) notesCount.textContent = "0";
+      if (photoList) photoList.innerHTML = "";
+    }
+  }
+
+  /**
+   * Make the given glass id the active one — switches to its view if needed,
+   * sets activeGlassId, and syncs the panel pills. Used on page-load
+   * rehydration and when the editing glass is removed but others remain.
+   */
+  function activateGlassById(id) {
+    if (!damages[id]) return;
+    const targetView = GLASS_TO_VIEW[id];
+    if (targetView && VIEWS[currentViewIndex] !== targetView) {
+      currentViewIndex = VIEWS.indexOf(targetView);
+      showView(targetView);
+    }
+    const el = document.getElementById(id);
+    if (el) {
+      selectWindow(el);
+    } else {
+      // SVG element not in the DOM (extremely unlikely now that all views are
+      // inlined) — fall back to direct state update.
+      activeGlassId = id;
+      syncPanelFromDamage(damages[id]);
+      renderSelectedChips();
+      applyHighlights();
     }
   }
 
@@ -406,21 +473,13 @@
   }
 
   function performReset() {
+    // Clear everything — both selector state AND the vehicle info from Step 1.
     damages = {};
     activeGlassId = null;
-    sessionStorage.removeItem("agx_damages");
-    document.querySelectorAll(".glass-window.selected, .glass-window.has-damage").forEach((el) => {
-      el.classList.remove("selected", "has-damage");
-    });
-    damageGroup.querySelectorAll(".pill.active").forEach((p) => p.classList.remove("active"));
-    featuresGroup.querySelectorAll(".pill.active").forEach((p) => p.classList.remove("active"));
-    serviceGroup.querySelectorAll(".pill.active").forEach((p) => p.classList.remove("active"));
-    notesInput.value = "";
-    notesCount.textContent = "0";
-    photoList.innerHTML = "";
-    renderSelectedChips();
-    currentViewIndex = 0;
-    showView(VIEWS[0]);
+    sessionStorage.removeItem(STORAGE_KEYS.DAMAGES);
+    sessionStorage.removeItem(STORAGE_KEYS.VEHICLE);
+    // Send the user back to the starting page (Step 1 / vehicle form).
+    window.location.href = "index.php";
   }
 
   /* ---------- Persistence ---------- */
@@ -431,18 +490,23 @@
     Object.keys(damages).forEach((id) => {
       const r = damages[id];
       slim[id] = {
-        name:         r.name,
-        damage_type:  r.damage_type,
-        service_type: r.service_type || null,
-        features:     Array.isArray(r.features) ? r.features.slice() : [],
-        notes:        r.notes || "",
-        photos:       (Array.isArray(r.photos) ? r.photos : [])
+        name:        r.name,
+        damage_type: r.damage_type,
+        crack_size:  r.crack_size || null,
+        features:    Array.isArray(r.features) ? r.features.slice() : [],
+        notes:       r.notes || "",
+        photos:      (Array.isArray(r.photos) ? r.photos : [])
           .filter((p) => p && p.url)
           .map((p) => ({ url: p.url, name: p.name || "", size: p.size || 0 })),
       };
+      // Include the glass-specific extra field (whatever its name is), if any.
+      const cfg = glassSpecificCfg[id];
+      if (cfg && cfg.field) {
+        slim[id][cfg.field] = r[cfg.field] || null;
+      }
     });
     try {
-      sessionStorage.setItem("agx_damages", JSON.stringify(slim));
+      sessionStorage.setItem(STORAGE_KEYS.DAMAGES, JSON.stringify(slim));
     } catch (e) {
       console.warn("[agx] sessionStorage quota exceeded; dropping photo previews.", e);
     }
@@ -452,135 +516,59 @@
   }
 
   function updateContinueState() {
-    const hasAny = Object.keys(damages).length > 0;
-    continueBtn.disabled = !hasAny;
-    continueBtn.title = hasAny ? "" : "Select at least one window first";
+    const ids = Object.keys(damages);
+    if (ids.length === 0) {
+      continueBtn.disabled = true;
+      continueBtn.title = "Select at least one window first";
+      return;
+    }
+    // Every selected glass needs at least one button picked in each required section.
+    for (const id of ids) {
+      const missing = missingFieldsFor(id);
+      if (missing.length > 0) {
+        continueBtn.disabled = true;
+        const glassName = (damages[id] && damages[id].name) || id;
+        continueBtn.title = "Pick at least one option in: " + missing.join(", ") + " (" + glassName + ")";
+        return;
+      }
+    }
+    continueBtn.disabled = false;
+    continueBtn.title = "";
+  }
+
+  function missingFieldsFor(id) {
+    const rec = damages[id];
+    if (!rec) return ["all sections"];
+    const missing = [];
+    if (!rec.damage_type) missing.push("Type of Damage");
+    if (!Array.isArray(rec.features) || rec.features.length === 0) missing.push("Special features");
+    if (!rec.crack_size) missing.push("Crack / chip size");
+    const cfg = glassSpecificCfg[id];
+    if (cfg && cfg.field && !rec[cfg.field]) missing.push(cfg.label || "Glass style");
+    return missing;
   }
 
   function loadDamages() {
     try {
-      return JSON.parse(sessionStorage.getItem("agx_damages") || "{}");
+      return JSON.parse(sessionStorage.getItem(STORAGE_KEYS.DAMAGES) || "{}");
     } catch (e) {
       return {};
     }
   }
 
-  /* ---------- Submit ---------- */
-  const submitModal     = document.getElementById("submit-modal");
-  const submitIcon      = submitModal.querySelector(".submit-icon");
-  const submitTitle     = document.getElementById("submit-modal-title");
-  const submitMessage   = document.getElementById("submit-modal-message");
-  const submitActionBox = document.getElementById("submit-modal-actions");
-  const submitClose     = document.getElementById("submit-cancel");
-  const submitRetry     = document.getElementById("submit-retry");
-  const submitDone      = document.getElementById("submit-done");
-
-  let submitInFlight = false;
-  let lastPayload    = null;
-
-  submitClose.addEventListener("click", closeSubmitModal);
-  submitDone.addEventListener("click", () => {
-    closeSubmitModal();
-    // After a successful submission, send the user back to Step 1 fresh.
-    window.location.href = "index.php";
-  });
-  submitRetry.addEventListener("click", () => {
-    if (lastPayload) sendPayload(lastPayload);
-  });
-  submitModal.addEventListener("click", (e) => {
-    if (e.target === submitModal && submitIcon.dataset.state !== "loading") closeSubmitModal();
-  });
-
-  function setSubmitState(state, opts) {
-    opts = opts || {};
-    submitIcon.dataset.state = state;
-    submitTitle.textContent   = opts.title || "";
-    submitMessage.textContent = opts.message || "";
-
-    submitClose.hidden = !opts.showClose;
-    submitRetry.hidden = !opts.showRetry;
-    submitDone.hidden  = !opts.showDone;
-    submitActionBox.hidden = !(opts.showClose || opts.showRetry || opts.showDone);
-  }
-
-  function openSubmitModal() {
-    submitModal.hidden = false;
-    requestAnimationFrame(() => submitModal.classList.add("open"));
-  }
-
-  function closeSubmitModal() {
-    submitModal.classList.remove("open");
-    setTimeout(() => { submitModal.hidden = true; }, 200);
-  }
-
-  function setContinueLoading(loading) {
-    continueBtn.classList.toggle("is-loading", loading);
-    continueBtn.disabled = loading || Object.keys(damages).length === 0;
-    const spinner = continueBtn.querySelector(".btn-spinner");
-    if (spinner) spinner.hidden = !loading;
-  }
-
+  /* ---------- Advance to Step 3 ---------- */
+  // The Continue button on the selector page just navigates forward — the
+  // final POST happens later from contact.php. (Previously this file had a
+  // full submit pipeline + modal wiring; removed once the multi-step flow
+  // shipped, so the only behaviour here is "save state and navigate".)
   function submitAll() {
-    if (submitInFlight) return;            // double-submit guard
     if (Object.keys(damages).length === 0) return;
-
-    const vehicleRaw = sessionStorage.getItem("agx_vehicle");
-    if (!vehicleRaw) {
+    if (!sessionStorage.getItem(STORAGE_KEYS.VEHICLE)) {
       window.location.href = "index.php";
       return;
     }
-    let vehicle;
-    try { vehicle = JSON.parse(vehicleRaw); } catch (_) { vehicle = {}; }
-    const payload = { vehicle: vehicle, damages: damages };
-    lastPayload = payload;
-    sendPayload(payload);
-  }
-
-  function sendPayload(payload) {
-    submitInFlight = true;
-    setContinueLoading(true);
-    setSubmitState("loading", {
-      title:   "Sending your request…",
-      message: "One moment while we save your glass selection."
-    });
-    openSubmitModal();
-
-    fetch("submit.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    })
-      .then((r) => r.json().catch(() => ({ ok: false })))
-      .then((res) => {
-        submitInFlight = false;
-        setContinueLoading(false);
-        if (res && res.ok) {
-          sessionStorage.removeItem("agx_vehicle");
-          sessionStorage.removeItem("agx_damages");
-          setSubmitState("success", {
-            title:   "Thanks! We received your request.",
-            message: "Reference: " + (res.id || "—") + ". We'll contact you shortly with the next steps.",
-            showDone: true
-          });
-        } else {
-          setSubmitState("error", {
-            title:   "Something went wrong.",
-            message: (res && res.error) || "Please try again in a moment.",
-            showClose: true,
-            showRetry: true
-          });
-        }
-      })
-      .catch(() => {
-        submitInFlight = false;
-        setContinueLoading(false);
-        setSubmitState("error", {
-          title:   "Network error.",
-          message: "We couldn't reach the server. Check your connection and try again.",
-          showClose: true,
-          showRetry: true
-        });
-      });
+    saveDamages();
+    window.location.href = "service.php";
   }
 
   /* ---------- Utility ---------- */

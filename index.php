@@ -3,14 +3,18 @@
  * Step 1 — Vehicle information form
  */
 require_once __DIR__ . '/includes/config.php';
-$vehiclesJson = @file_get_contents(AGX_DATA_DIR . '/vehicles.json') ?: '{}';
+$vehiclesJson = json_encode(agx_vehicles(), JSON_UNESCAPED_UNICODE);
 ?><!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AGX — Vehicle Glass Estimate</title>
-  <link rel="stylesheet" href="assets/css/form.css">
+  <?php
+    $formCssV = @filemtime(__DIR__ . '/assets/css/form.css');
+    $formJsV  = @filemtime(__DIR__ . '/assets/js/form.js');
+  ?>
+  <link rel="stylesheet" href="assets/css/form.css?v=<?= $formCssV ?>">
 </head>
 <body>
   <div class="page-wrap">
@@ -94,6 +98,6 @@ $vehiclesJson = @file_get_contents(AGX_DATA_DIR . '/vehicles.json') ?: '{}';
   </div>
 
   <script type="application/json" id="agx-vehicles-data"><?= $vehiclesJson ?></script>
-  <script src="assets/js/form.js"></script>
+  <script src="assets/js/form.js?v=<?= $formJsV ?>"></script>
 </body>
 </html>

@@ -18,6 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+if (!agx_same_origin()) {
+    error_log('[agx upload] cross-origin POST blocked. Origin=' . ($_SERVER['HTTP_ORIGIN'] ?? '') . ' Referer=' . ($_SERVER['HTTP_REFERER'] ?? ''));
+    http_response_code(403);
+    echo json_encode(['ok' => false, 'error' => 'Forbidden']);
+    exit;
+}
+
 if (!isset($_FILES['photo']) || $_FILES['photo']['error'] !== UPLOAD_ERR_OK) {
     $err = $_FILES['photo']['error'] ?? UPLOAD_ERR_NO_FILE;
     error_log('[agx upload] upload error code: ' . $err);

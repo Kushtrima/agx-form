@@ -6,6 +6,18 @@
 
 require_once __DIR__ . '/includes/config.php';
 
+// ---------- Safety: refuse to serve admin if the default password is still
+// in place AND the request is coming from outside localhost. This prevents
+// an accidental deploy with the placeholder credentials.
+$remoteIp = $_SERVER['REMOTE_ADDR'] ?? '';
+$isLocal  = in_array($remoteIp, ['127.0.0.1', '::1', 'localhost'], true);
+if (AGX_ADMIN_PASS === 'change-me' && !$isLocal) {
+    http_response_code(503);
+    echo '<h1>503 — Admin not configured</h1>';
+    echo '<p>Set the <code>AGX_ADMIN_PASS</code> environment variable before exposing this endpoint.</p>';
+    exit;
+}
+
 // ---------- HTTP Basic auth ----------
 $user = $_SERVER['PHP_AUTH_USER'] ?? '';
 $pass = $_SERVER['PHP_AUTH_PW']   ?? '';
@@ -27,9 +39,9 @@ if (is_file(AGX_SUBMISSIONS_FILE)) {
 }
 
 // ---------- Pretty labels (re-use options.json) ----------
-$options = json_decode(@file_get_contents(AGX_DATA_DIR . '/options.json'), true) ?: [];
+$options = agx_options();
 $labelMap = [];
-foreach (['damage_types', 'features', 'service_types'] as $bucket) {
+foreach (['damage_types', 'features', 'crack_sizes', 'service_modes', 'payment_modes', 'time_slots'] as $bucket) {
     foreach (($options[$bucket] ?? []) as $opt) {
         $labelMap[$opt['value']] = $opt['label'];
     }
@@ -73,6 +85,7 @@ function h(string $s): string { return htmlspecialchars($s, ENT_QUOTES, 'UTF-8')
           <?php foreach ($submissions as $sub):
             $v = $sub['vehicle'] ?? [];
             $d = $sub['damages'] ?? [];
+            $s = $sub['service'] ?? [];
             $vehicleLine = trim(
               ($v['selected_year']  ?? '') . ' ' .
               ($v['selected_brand'] ?? '') . ' ' .
@@ -95,6 +108,30 @@ function h(string $s): string { return htmlspecialchars($s, ENT_QUOTES, 'UTF-8')
             </tr>
             <tr class="row-detail" id="detail-<?= h($sub['id'] ?? '') ?>" hidden>
               <td colspan="5">
+                <?php $c = $sub['contact'] ?? []; if (!empty($c)): ?>
+                  <div class="service-summary contact-summary">
+                    <strong>Contact:</strong>
+                    <?= h(trim(($c['first_name'] ?? '') . ' ' . ($c['last_name'] ?? ''))) ?> ·
+                    <a href="mailto:<?= h($c['email'] ?? '') ?>"><?= h($c['email'] ?? '') ?></a> ·
+                    <a href="tel:<?= h($c['phone'] ?? '') ?>"><?= h($c['phone'] ?? '') ?></a> ·
+                    ZIP <?= h($c['zip'] ?? '') ?>
+                    <?php if (!empty($c['notes'])): ?>
+                      <div class="contact-notes"><em><?= nl2br(h($c['notes'])) ?></em></div>
+                    <?php endif; ?>
+                  </div>
+                <?php endif; ?>
+                <?php if (!empty($s)): ?>
+                  <div class="service-summary">
+                    <strong>Service:</strong>
+                    <?= h(label_for((string)($s['service_mode'] ?? '—'), $labelMap)) ?> ·
+                    <?= h(label_for((string)($s['payment_mode'] ?? '—'), $labelMap)) ?>
+                    <?php if (!empty($s['insurance_provider'])): ?>
+                      (<?= h($s['insurance_provider']) ?>)
+                    <?php endif; ?>
+                    · <?= h($s['preferred_date'] ?? '—') ?>
+                    · <?= h(label_for((string)($s['preferred_time'] ?? '—'), $labelMap)) ?>
+                  </div>
+                <?php endif; ?>
                 <div class="detail-grid">
                   <?php foreach ($d as $glassId => $rec): ?>
                     <article class="glass-card">
@@ -105,8 +142,8 @@ function h(string $s): string { return htmlspecialchars($s, ENT_QUOTES, 'UTF-8')
                       <dl>
                         <dt>Damage</dt>
                         <dd><?= h(label_for((string)($rec['damage_type'] ?? '—'), $labelMap)) ?></dd>
-                        <dt>Service</dt>
-                        <dd><?= h(label_for((string)($rec['service_type'] ?? '—'), $labelMap)) ?></dd>
+                        <dt>Size</dt>
+                        <dd><?= h(label_for((string)($rec['crack_size'] ?? '—'), $labelMap)) ?></dd>
                         <dt>Features</dt>
                         <dd>
                           <?php $f = $rec['features'] ?? []; ?>

@@ -5,7 +5,7 @@
 require_once __DIR__ . '/includes/config.php';
 
 // Single source of truth for damage types, features, body categories, glass IDs.
-$options = json_decode(@file_get_contents(AGX_DATA_DIR . '/options.json'), true) ?: [];
+$options = agx_options();
 
 // Body category — whitelisted to prevent directory traversal once it becomes dynamic.
 $requestedBody = $_GET['body'] ?? 'sedan';
@@ -15,9 +15,10 @@ $bodyCategory  = in_array($requestedBody, $allowedBodies, true) ? $requestedBody
 $svgDir = __DIR__ . '/vehicles/' . basename($bodyCategory);
 $views  = ['right', 'front', 'left', 'back', 'top'];
 
-$damageOptions  = $options['damage_types'] ?? [];
-$featureOptions = $options['features']     ?? [];
-$serviceOptions = $options['service_types'] ?? [];
+$damageOptions    = $options['damage_types'] ?? [];
+$featureOptions   = $options['features']     ?? [];
+$crackSizeOptions = $options['crack_sizes']  ?? [];
+$glassSpecificCfg = $options['glass_specific_options'] ?? [];
 
 /**
  * Read an SVG file with a per-request static cache.
@@ -36,8 +37,13 @@ function agx_svg(string $path): string {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AGX — Select Damaged Glass</title>
-  <link rel="stylesheet" href="assets/css/form.css">
-  <link rel="stylesheet" href="assets/css/selector.css">
+  <?php
+    $formCssV     = @filemtime(__DIR__ . '/assets/css/form.css');
+    $selectorCssV = @filemtime(__DIR__ . '/assets/css/selector.css');
+    $selectorJsV  = @filemtime(__DIR__ . '/assets/js/selector.js');
+  ?>
+  <link rel="stylesheet" href="assets/css/form.css?v=<?= $formCssV ?>">
+  <link rel="stylesheet" href="assets/css/selector.css?v=<?= $selectorCssV ?>">
 </head>
 <body>
   <div class="page-wrap">
@@ -102,60 +108,50 @@ function agx_svg(string $path): string {
           <button type="button" class="remove-x" id="remove-selected" aria-label="Remove this glass">×</button>
         </div>
 
-        <div class="panel-row">
-          <div class="panel-label">Type of Damage</div>
-          <div class="pill-group" id="damage-group">
-            <?php foreach ($damageOptions as $opt): ?>
-              <button type="button" class="pill" data-value="<?= htmlspecialchars($opt['value']) ?>"><?= htmlspecialchars(strtoupper($opt['label'])) ?></button>
-            <?php endforeach; ?>
-          </div>
-        </div>
+        <div class="damage-grid" id="damage-grid">
 
-        <div class="panel-row">
-          <div class="panel-label">
-            Special features<br>on this glass
-            <span class="sub">(select all that apply)</span>
+          <div class="damage-column">
+            <div class="panel-label">Type of Damage</div>
+            <div class="pill-group pill-group-column" id="damage-group">
+              <?php foreach ($damageOptions as $opt): ?>
+                <button type="button" class="pill" data-value="<?= htmlspecialchars($opt['value']) ?>"><?= htmlspecialchars(strtoupper($opt['label'])) ?></button>
+              <?php endforeach; ?>
+            </div>
           </div>
-          <div class="pill-group features" id="features-group">
-            <?php foreach ($featureOptions as $opt): ?>
-              <button type="button" class="pill" data-value="<?= htmlspecialchars($opt['value']) ?>"><?= htmlspecialchars($opt['label']) ?></button>
-            <?php endforeach; ?>
-          </div>
-        </div>
 
-        <div class="panel-row">
-          <div class="panel-label">Service needed</div>
-          <div class="pill-group" id="service-group">
-            <?php foreach ($serviceOptions as $opt): ?>
-              <button type="button" class="pill" data-value="<?= htmlspecialchars($opt['value']) ?>"><?= htmlspecialchars(strtoupper($opt['label'])) ?></button>
-            <?php endforeach; ?>
+          <div class="damage-column">
+            <div class="panel-label">
+              Special features on this glass
+              <span class="sub">(select all that apply)</span>
+            </div>
+            <div class="pill-group pill-group-column features" id="features-group">
+              <?php foreach ($featureOptions as $opt): ?>
+                <button type="button" class="pill" data-value="<?= htmlspecialchars($opt['value']) ?>"><?= htmlspecialchars($opt['label']) ?></button>
+              <?php endforeach; ?>
+            </div>
           </div>
-        </div>
 
-        <div class="panel-row">
-          <div class="panel-label">
-            Photos
-            <span class="sub">(optional — JPEG/PNG/WebP up to 6 MB)</span>
+          <div class="damage-column">
+            <div class="panel-label">Crack / chip size</div>
+            <div class="pill-group pill-group-column pill-group-stack" id="crack-size-group">
+              <?php foreach ($crackSizeOptions as $opt): ?>
+                <button type="button" class="pill pill-stack" data-value="<?= htmlspecialchars($opt['value']) ?>">
+                  <span class="pill-title"><?= htmlspecialchars($opt['label']) ?></span>
+                  <?php if (!empty($opt['sub'])): ?>
+                    <span class="pill-sub"><?= htmlspecialchars($opt['sub']) ?></span>
+                  <?php endif; ?>
+                </button>
+              <?php endforeach; ?>
+            </div>
           </div>
-          <div class="photo-wrap">
-            <label class="photo-add" for="photo-input">
-              <span class="photo-add-icon" aria-hidden="true">+</span>
-              <span class="photo-add-text">Add photo</span>
-            </label>
-            <input id="photo-input" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" hidden>
-            <div class="photo-list" id="photo-list"></div>
-          </div>
-        </div>
 
-        <div class="panel-row">
-          <div class="panel-label">
-            Notes
-            <span class="sub">(optional — details that help the technician)</span>
+          <!-- 4th column — glass-specific options (conditional). Hidden by default;
+               JS reveals it when the active glass has options defined. -->
+          <div class="damage-column damage-column-glass-options" id="glass-options-column">
+            <div class="panel-label" id="glass-options-label">Glass style</div>
+            <div class="pill-group pill-group-column pill-group-stack" id="glass-options-group"></div>
           </div>
-          <div class="notes-wrap">
-            <textarea id="notes-input" class="notes-input" maxlength="500" rows="3" placeholder="e.g. crack started near the bottom-left corner after a stone hit yesterday"></textarea>
-            <div class="notes-counter"><span id="notes-count">0</span>/500</div>
-          </div>
+
         </div>
 
       </div>
@@ -202,32 +198,6 @@ function agx_svg(string $path): string {
 
   </div>
 
-  <!-- Submit status modal (loading / success / error) -->
-  <div id="submit-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="submit-modal-title" hidden>
-    <div class="modal-dialog">
-      <div class="modal-icon submit-icon" data-state="loading">
-        <svg class="state-loading" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <circle cx="12" cy="12" r="9" stroke-opacity="0.25"/>
-          <path d="M21 12a9 9 0 0 0 -9 -9"/>
-        </svg>
-        <svg class="state-success" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="5,12.5 10,17.5 19,7"/>
-        </svg>
-        <svg class="state-error" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="6" y1="6" x2="18" y2="18"/>
-          <line x1="18" y1="6" x2="6" y2="18"/>
-        </svg>
-      </div>
-      <h3 id="submit-modal-title" class="modal-title">Sending your request…</h3>
-      <p id="submit-modal-message" class="modal-message">One moment while we save your glass selection.</p>
-      <div class="modal-actions" id="submit-modal-actions" hidden>
-        <button type="button" id="submit-cancel" class="btn btn-ghost" hidden>Close</button>
-        <button type="button" id="submit-retry" class="btn btn-primary" hidden>Try again</button>
-        <button type="button" id="submit-done" class="btn btn-primary" hidden>Done</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Reset confirmation modal -->
   <div id="reset-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title" hidden>
     <div class="modal-dialog">
@@ -246,6 +216,7 @@ function agx_svg(string $path): string {
     </div>
   </div>
 
-  <script src="assets/js/selector.js"></script>
+  <script type="application/json" id="agx-glass-options-data"><?= json_encode($glassSpecificCfg, JSON_UNESCAPED_UNICODE) ?></script>
+  <script src="assets/js/selector.js?v=<?= $selectorJsV ?>"></script>
 </body>
 </html>

@@ -95,6 +95,22 @@ body { background: #F4F6F9; color: var(--text-dark); }
   padding: 6px 14px;
 }
 
+/* ----- Service summary inside the detail row ----- */
+.service-summary {
+  font-size: 13px;
+  color: var(--text-dark);
+  padding: 12px 14px;
+  background: #F2F6FB;
+  border-radius: 6px;
+  margin: 16px 0 6px;
+}
+.service-summary strong { color: var(--primary); font-weight: 600; margin-right: 4px; }
+.service-summary a { color: var(--primary); text-decoration: none; }
+.service-summary a:hover { text-decoration: underline; }
+.contact-summary { background: #FFF6E6; border: 1px solid #F3DEB0; }
+.contact-summary strong { color: #8A5A00; }
+.contact-notes { margin-top: 6px; color: var(--text-muted); font-size: 12px; }
+
 /* ----- Detail grid ----- */
 .detail-grid {
   display: grid;

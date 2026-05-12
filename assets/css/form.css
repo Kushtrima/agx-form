@@ -201,6 +201,18 @@ html, body {
   text-underline-offset: 3px;
 }
 
+/* Reset is a destructive action — always red so it's instantly recognisable. */
+#reset-btn,
+#reset-btn:hover {
+  color: var(--danger);
+  text-decoration: none;
+}
+#reset-btn:hover {
+  color: var(--danger-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .btn-danger {
   background: var(--danger);
   color: var(--white);

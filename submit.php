@@ -16,7 +16,20 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+if (!agx_same_origin()) {
+    error_log('[agx submit] cross-origin POST blocked. Origin=' . ($_SERVER['HTTP_ORIGIN'] ?? '') . ' Referer=' . ($_SERVER['HTTP_REFERER'] ?? ''));
+    http_response_code(403);
+    echo json_encode(['ok' => false, 'error' => 'Forbidden']);
+    exit;
+}
+
 $raw = file_get_contents('php://input');
+if (strlen((string)$raw) > AGX_MAX_SUBMIT_BYTES) {
+    error_log('[agx submit] payload too large: ' . strlen((string)$raw) . ' bytes');
+    http_response_code(413);
+    echo json_encode(['ok' => false, 'error' => 'Payload too large']);
+    exit;
+}
 $payload = json_decode($raw, true);
 
 if (!is_array($payload) || empty($payload['vehicle']) || empty($payload['damages'])) {
@@ -27,14 +40,19 @@ if (!is_array($payload) || empty($payload['vehicle']) || empty($payload['damages
 }
 
 // ---------- Load whitelists ----------
-$options = json_decode(@file_get_contents(AGX_DATA_DIR . '/options.json'), true) ?: [];
+$options = agx_options();
 $validDamageTypes  = array_column($options['damage_types']  ?? [], 'value');
 $validFeatures     = array_column($options['features']      ?? [], 'value');
-$validServiceTypes = array_column($options['service_types'] ?? [], 'value');
+$validCrackSizes   = array_column($options['crack_sizes']   ?? [], 'value');
 $validBodies       = $options['body_categories']            ?? ['sedan'];
 $glassesByBody     = $options['glasses_by_body']            ?? [];
+$glassSpecificCfg  = $options['glass_specific_options']     ?? [];
+$validServiceModes = array_column($options['service_modes'] ?? [], 'value');
+$validPaymentModes = array_column($options['payment_modes'] ?? [], 'value');
+$validTimeSlots    = array_column($options['time_slots']    ?? [], 'value');
+$validProviders    = $options['insurance_providers']        ?? [];
 
-$vehicles = json_decode(@file_get_contents(AGX_DATA_DIR . '/vehicles.json'), true) ?: [];
+$vehicles = agx_vehicles();
 $validYears  = array_map('strval', $vehicles['years'] ?? []);
 $validBrands = array_keys($vehicles['brands'] ?? []);
 
@@ -110,12 +128,12 @@ foreach ($damagesIn as $glassId => $rec) {
         exit;
     }
 
-    $name        = is_string($rec['name'] ?? null) ? substr($rec['name'], 0, 80) : $glassId;
-    $damageType  = $rec['damage_type'] ?? null;
-    $serviceType = $rec['service_type'] ?? null;
-    $featuresIn  = is_array($rec['features'] ?? null) ? $rec['features'] : [];
-    $notes       = is_string($rec['notes'] ?? null) ? substr(trim($rec['notes']), 0, 500) : '';
-    $photosIn    = is_array($rec['photos']   ?? null) ? $rec['photos']   : [];
+    $name       = is_string($rec['name'] ?? null) ? substr($rec['name'], 0, 80) : $glassId;
+    $damageType = $rec['damage_type'] ?? null;
+    $crackSize  = $rec['crack_size']  ?? null;
+    $featuresIn = is_array($rec['features'] ?? null) ? $rec['features'] : [];
+    $notes      = is_string($rec['notes'] ?? null) ? substr(trim($rec['notes']), 0, 500) : '';
+    $photosIn   = is_array($rec['photos']   ?? null) ? $rec['photos']   : [];
 
     if ($damageType !== null && !in_array($damageType, $validDamageTypes, true)) {
         http_response_code(400);
@@ -123,9 +141,9 @@ foreach ($damagesIn as $glassId => $rec) {
         exit;
     }
 
-    if ($serviceType !== null && !in_array($serviceType, $validServiceTypes, true)) {
+    if ($crackSize !== null && !in_array($crackSize, $validCrackSizes, true)) {
         http_response_code(400);
-        echo json_encode(['ok' => false, 'error' => 'Invalid service type for ' . $glassId]);
+        echo json_encode(['ok' => false, 'error' => 'Invalid crack size for ' . $glassId]);
         exit;
     }
 
@@ -154,15 +172,130 @@ foreach ($damagesIn as $glassId => $rec) {
         if (count($cleanPhotos) >= 8) break;   // cap per-glass photos
     }
 
-    $cleanDamages[$glassId] = [
-        'name'         => $name,
-        'damage_type'  => $damageType,
-        'service_type' => $serviceType,
-        'features'     => $cleanFeatures,
-        'notes'        => $notes,
-        'photos'       => $cleanPhotos,
+    $cleanRec = [
+        'name'        => $name,
+        'damage_type' => $damageType,
+        'crack_size'  => $crackSize,
+        'features'    => $cleanFeatures,
+        'notes'       => $notes,
+        'photos'      => $cleanPhotos,
     ];
+
+    // Glass-specific extra field (e.g., front_windshield → glass_style).
+    // Validate against this glass's own whitelist, drop anything unknown.
+    if (isset($glassSpecificCfg[$glassId])) {
+        $cfg            = $glassSpecificCfg[$glassId];
+        $field          = is_string($cfg['field'] ?? null) ? $cfg['field'] : null;
+        $allowedValues  = array_column($cfg['options'] ?? [], 'value');
+        $incomingValue  = ($field !== null && isset($rec[$field])) ? $rec[$field] : null;
+        if ($field !== null) {
+            if ($incomingValue !== null && !in_array($incomingValue, $allowedValues, true)) {
+                error_log('[agx submit] invalid glass-specific value for ' . $glassId . '.' . $field . ': ' . $incomingValue);
+                http_response_code(400);
+                echo json_encode(['ok' => false, 'error' => 'Invalid value for ' . $glassId]);
+                exit;
+            }
+            $cleanRec[$field] = $incomingValue;
+        }
+    }
+
+    $cleanDamages[$glassId] = $cleanRec;
 }
+
+// ---------- Validate service block (optional — older clients may omit it) ----------
+$serviceIn = is_array($payload['service'] ?? null) ? $payload['service'] : [];
+
+$serviceMode      = $serviceIn['service_mode']       ?? null;
+$paymentMode      = $serviceIn['payment_mode']       ?? null;
+$insuranceProvider= $serviceIn['insurance_provider'] ?? null;
+$preferredDate    = $serviceIn['preferred_date']     ?? null;
+$preferredTime    = $serviceIn['preferred_time']     ?? null;
+
+if ($serviceMode !== null && !in_array($serviceMode, $validServiceModes, true)) {
+    error_log('[agx submit] invalid service_mode: ' . $serviceMode);
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Invalid service mode']);
+    exit;
+}
+if ($paymentMode !== null && !in_array($paymentMode, $validPaymentModes, true)) {
+    error_log('[agx submit] invalid payment_mode: ' . $paymentMode);
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Invalid payment mode']);
+    exit;
+}
+if ($preferredTime !== null && !in_array($preferredTime, $validTimeSlots, true)) {
+    error_log('[agx submit] invalid preferred_time: ' . $preferredTime);
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Invalid preferred time']);
+    exit;
+}
+if ($insuranceProvider !== null && $insuranceProvider !== '' && !in_array($insuranceProvider, $validProviders, true)) {
+    error_log('[agx submit] unknown insurance_provider: ' . $insuranceProvider);
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Unknown insurance provider']);
+    exit;
+}
+if ($preferredDate !== null && $preferredDate !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', (string)$preferredDate)) {
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Invalid preferred date']);
+    exit;
+}
+// Clear insurance_provider if payment_mode isn't insurance — keeps the record tidy.
+if ($paymentMode !== 'insurance') $insuranceProvider = null;
+
+$service = [
+    'service_mode'       => $serviceMode,
+    'payment_mode'       => $paymentMode,
+    'insurance_provider' => $insuranceProvider,
+    'preferred_date'     => $preferredDate,
+    'preferred_time'     => $preferredTime,
+];
+
+// ---------- Validate contact block ----------
+$contactIn = is_array($payload['contact'] ?? null) ? $payload['contact'] : [];
+
+$firstName = is_string($contactIn['first_name'] ?? null) ? trim($contactIn['first_name']) : '';
+$lastName  = is_string($contactIn['last_name']  ?? null) ? trim($contactIn['last_name'])  : '';
+$email     = is_string($contactIn['email']      ?? null) ? trim($contactIn['email'])      : '';
+$phone     = is_string($contactIn['phone']      ?? null) ? trim($contactIn['phone'])      : '';
+$contactZip= is_string($contactIn['zip']        ?? null) ? trim($contactIn['zip'])        : '';
+$contactNotes = is_string($contactIn['notes']   ?? null) ? substr(trim($contactIn['notes']), 0, 500) : '';
+
+if ($firstName === '' || strlen($firstName) > 80) {
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Invalid first name']);
+    exit;
+}
+if ($lastName === '' || strlen($lastName) > 80) {
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Invalid last name']);
+    exit;
+}
+if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 200) {
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Invalid email']);
+    exit;
+}
+$phoneDigits = preg_replace('/\D+/', '', $phone);
+if (strlen($phoneDigits) < 7 || strlen($phoneDigits) > 20) {
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Invalid phone number']);
+    exit;
+}
+if ($contactZip === '' || !preg_match('/^[A-Za-z0-9 \-]{3,12}$/', $contactZip)) {
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Invalid ZIP / postal code']);
+    exit;
+}
+
+$contact = [
+    'first_name' => $firstName,
+    'last_name'  => $lastName,
+    'email'      => $email,
+    'phone'      => $phone,
+    'zip'        => $contactZip,
+    'notes'      => $contactNotes,
+];
 
 // ---------- Build the record ----------
 $record = [
@@ -176,6 +309,8 @@ $record = [
         'vin_optional'        => $vin,
     ],
     'damages'    => $cleanDamages,
+    'service'    => $service,
+    'contact'    => $contact,
 ];
 
 if (!is_dir(AGX_DATA_DIR)) {

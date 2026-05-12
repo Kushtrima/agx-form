@@ -4,6 +4,14 @@
 (function () {
   "use strict";
 
+  // Shared sessionStorage keys (mirrored in form.js / selector.js / service.js / contact.js)
+  const STORAGE_KEYS = {
+    VEHICLE: STORAGE_KEYS.VEHICLE,
+    DAMAGES: STORAGE_KEYS.DAMAGES,
+    SERVICE: "agx_service",
+    CONTACT: "agx_contact",
+  };
+
   const yearSel  = document.getElementById("year");
   const brandSel = document.getElementById("brand");
   const modelSel = document.getElementById("model");
@@ -90,7 +98,7 @@
 
   function restoreFromStorage() {
     try {
-      const raw = sessionStorage.getItem("agx_vehicle");
+      const raw = sessionStorage.getItem(STORAGE_KEYS.VEHICLE);
       if (!raw) return;
       const v = JSON.parse(raw);
       if (v.year && [...yearSel.options].some(o => o.value === v.year)) yearSel.value = v.year;
@@ -114,14 +122,14 @@
       body_style: bodySel.value,
       vin:        vinInput.value.trim()
     };
-    sessionStorage.setItem("agx_vehicle", JSON.stringify(payload));
+    sessionStorage.setItem(STORAGE_KEYS.VEHICLE, JSON.stringify(payload));
     window.location.href = "selector.php";
   });
 
   cancelBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    sessionStorage.removeItem("agx_vehicle");
-    sessionStorage.removeItem("agx_damages");
+    sessionStorage.removeItem(STORAGE_KEYS.VEHICLE);
+    sessionStorage.removeItem(STORAGE_KEYS.DAMAGES);
     [yearSel, brandSel, modelSel, bodySel].forEach((s) => { s.selectedIndex = 0; });
     modelSel.disabled = true;
     vinInput.value = "";
