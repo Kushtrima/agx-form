@@ -1,0 +1,220 @@
+/* ==========================================================
+   Step 5 — Estimate / quote review
+   ========================================================== */
+
+/* Replaces the headline + stepper that other steps have, so the white
+   card doesn't sit flush against the top of the viewport. */
+.estimate-top-spacer {
+  height: 24px;
+}
+
+/* Outer white card that wraps every section on the page. Light blue
+   outline ties it back to the rest of the form. */
+.estimate-card {
+  border: 1px solid rgba(31, 90, 173, 0.2);
+  padding: 24px;
+}
+
+/* "Your estimate is ready" chip — pinned top-right inside the summary card */
+.estimate-ready {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: #E8F5EC;
+  color: #1E8639;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid #C7E7CE;
+}
+.estimate-ready-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #1E8639;
+  color: #FFF;
+}
+.estimate-ready-check svg { width: 11px; height: 11px; }
+
+/* Big summary card — blue gradient, white text */
+.estimate-summary-card {
+  position: relative;
+  margin: 0 0 20px;
+  padding: 28px 32px;
+  border-radius: var(--radius-xl, 14px);
+  background: linear-gradient(135deg, #2363B8 0%, #1B4F99 100%);
+  color: var(--white);
+  border: 1px solid rgba(31, 90, 173, 0.2);
+  box-shadow: 0 10px 30px rgba(31, 90, 173, 0.25);
+  overflow: hidden;
+}
+.estimate-summary-card::before,
+.estimate-summary-card::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  pointer-events: none;
+}
+.estimate-summary-card::before {
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+}
+.estimate-summary-card::after {
+  bottom: -80px; right: 40px;
+  width: 120px; height: 120px;
+  background: rgba(255, 255, 255, 0.05);
+}
+.estimate-summary-content { position: relative; z-index: 1; }
+
+.estimate-summary-label {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  opacity: 0.85;
+}
+.estimate-summary-total {
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1.05;
+  margin: 4px 0 6px;
+  letter-spacing: -0.5px;
+}
+.estimate-summary-range {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-bottom: 20px;
+}
+
+/* Breakdown list (inside the summary card) */
+.estimate-breakdown {
+  margin: 0;
+  padding: 18px 20px;
+  background: rgba(255, 255, 255, 0.10);
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  row-gap: 10px;
+  column-gap: 16px;
+  font-size: 14px;
+}
+.estimate-breakdown dt,
+.estimate-breakdown dd { margin: 0; }
+.estimate-breakdown dt   { opacity: 0.92; }
+.estimate-breakdown dd   { font-variant-numeric: tabular-nums; }
+.estimate-breakdown .row-total dt,
+.estimate-breakdown .row-total dd { font-weight: 700; }
+.estimate-breakdown .row-total {
+  display: contents;
+}
+.estimate-breakdown .row-divider {
+  grid-column: 1 / -1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.20);
+  margin: 4px 0;
+}
+
+/* Tiles — 2 columns */
+.estimate-tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.estimate-tile {
+  background: var(--white);
+  border: 1px solid rgba(31, 90, 173, 0.2);
+  border-radius: var(--radius-lg, 12px);
+  padding: 14px 18px;
+}
+.estimate-tile-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.estimate-tile-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-dark);
+  line-height: 1.3;
+  word-wrap: break-word;
+}
+
+/* Info rows — bordered group, icon + text */
+.estimate-info {
+  border: 1px solid rgba(31, 90, 173, 0.2);
+  border-radius: var(--radius-lg, 12px);
+  margin-bottom: 22px;
+  overflow: hidden;
+  background: var(--white);
+}
+.estimate-info-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  font-size: 14px;
+  color: var(--text-dark);
+}
+.estimate-info-row + .estimate-info-row {
+  border-top: 1px solid rgba(31, 90, 173, 0.2);
+}
+.estimate-info-icon {
+  flex: 0 0 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #EEF2F7;
+  color: var(--primary);
+}
+.estimate-info-text {
+  flex: 1 1 auto;
+  line-height: 1.45;
+}
+.estimate-info-text strong { font-weight: 600; }
+
+/* Actions */
+.estimate-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.estimate-actions #book-btn {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.estimate-actions #adjust-btn {
+  flex: 0 0 auto;
+}
+
+/* Disclaimer */
+.estimate-disclaimer {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  text-align: left;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .estimate-summary-card { padding: 22px 20px; }
+  .estimate-summary-total { font-size: 42px; }
+  .estimate-tiles { grid-template-columns: 1fr; }
+  .estimate-actions { flex-direction: column; align-items: stretch; }
+  .estimate-actions #adjust-btn { width: 100%; }
+}

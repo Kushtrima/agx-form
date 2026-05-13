@@ -163,7 +163,15 @@
       }
     }, 220);
   });
-  reviewConfirm.addEventListener("click", submitAll);
+  // Step 4 → Step 5: the final POST has moved to estimate.js; here we just
+  // persist contact and navigate so the customer can review the quote first.
+  reviewConfirm.addEventListener("click", advanceToEstimate);
+  function advanceToEstimate() {
+    if (continueBtn.disabled) return;
+    saveContact();
+    closeReviewModal();
+    window.location.href = pageUrl("estimate");
+  }
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !reviewModal.hidden && !submitInFlight) closeReviewModal();
   });
