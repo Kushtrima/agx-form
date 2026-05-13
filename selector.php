@@ -112,21 +112,14 @@ function agx_svg(string $path): string {
 
           <div class="damage-column">
             <div class="panel-label">Type of Damage</div>
-            <div class="pill-group pill-group-column" id="damage-group">
+            <div class="pill-group pill-group-column pill-group-stack" id="damage-group">
               <?php foreach ($damageOptions as $opt): ?>
-                <button type="button" class="pill" data-value="<?= htmlspecialchars($opt['value']) ?>"><?= htmlspecialchars(strtoupper($opt['label'])) ?></button>
-              <?php endforeach; ?>
-            </div>
-          </div>
-
-          <div class="damage-column">
-            <div class="panel-label">
-              Special features on this glass
-              <span class="sub">(select all that apply)</span>
-            </div>
-            <div class="pill-group pill-group-column features" id="features-group">
-              <?php foreach ($featureOptions as $opt): ?>
-                <button type="button" class="pill" data-value="<?= htmlspecialchars($opt['value']) ?>"><?= htmlspecialchars($opt['label']) ?></button>
+                <button type="button" class="pill pill-stack" data-value="<?= htmlspecialchars($opt['value']) ?>">
+                  <span class="pill-title"><?= htmlspecialchars($opt['label']) ?></span>
+                  <?php if (!empty($opt['sub'])): ?>
+                    <span class="pill-sub"><?= htmlspecialchars($opt['sub']) ?></span>
+                  <?php endif; ?>
+                </button>
               <?php endforeach; ?>
             </div>
           </div>
@@ -141,6 +134,18 @@ function agx_svg(string $path): string {
                     <span class="pill-sub"><?= htmlspecialchars($opt['sub']) ?></span>
                   <?php endif; ?>
                 </button>
+              <?php endforeach; ?>
+            </div>
+          </div>
+
+          <div class="damage-column">
+            <div class="panel-label">
+              Special features on this glass
+              <span class="sub">(select all that apply)</span>
+            </div>
+            <div class="pill-group pill-group-column features" id="features-group">
+              <?php foreach ($featureOptions as $opt): ?>
+                <button type="button" class="pill" data-value="<?= htmlspecialchars($opt['value']) ?>"><?= htmlspecialchars($opt['label']) ?></button>
               <?php endforeach; ?>
             </div>
           </div>

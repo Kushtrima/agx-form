@@ -1,9 +1,7 @@
 {
   "damage_types": [
-    { "value": "chip_crack",       "label": "Chip / Crack" },
-    { "value": "shattered_broken", "label": "Shattered / Broken" },
-    { "value": "scratched",        "label": "Scratched" },
-    { "value": "leaking",          "label": "Leaking" }
+    { "value": "chip_crack",       "label": "Chip / crack",       "sub": "May be repairable" },
+    { "value": "shattered_broken", "label": "Shattered / broken", "sub": "Full replacement needed" }
   ],
   "features": [
     { "value": "heated_glass",   "label": "Heated Glass" },

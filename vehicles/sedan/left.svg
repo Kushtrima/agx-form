@@ -20,8 +20,8 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
   <circle class="car-body" cx="10565.86" cy="3139.91" r="689.67"/>
   <circle class="car-body" cx="2140.88" cy="3139.91" r="1018.26"/>
   <circle class="car-body" cx="2140.88" cy="3139.91" r="689.67"/>
-  <path id="left_front_door_window" class="glass-window" data-glass-name="Left Front Door Window" role="button" tabindex="0" aria-label="Left Front Door Window" d="M7742.48 314.52c1558.95,21.1 2306.24,344.74 2743.96,849.76l-2857.79 -4.44 113.83 -845.32z"><title>Left Front Door Window</title></path>
-  <path id="left_rear_door_window" class="glass-window" data-glass-name="Left Rear Door Window" role="button" tabindex="0" aria-label="Left Rear Door Window" d="M7429.62 314.52 C6541.0,326.5 6001.8,463.1 5522.1,681.3 L5375.67,1242.77 L7177.81,1159.84 Z"><title>Left Rear Door Window</title></path>
+  <path id="left_front_door_window" class="glass-window" data-glass-name="Left Rear Door Window" role="button" tabindex="0" aria-label="Left Rear Door Window" d="M7742.48 314.52c1558.95,21.1 2306.24,344.74 2743.96,849.76l-2857.79 -4.44 113.83 -845.32z"><title>Left Rear Door Window</title></path>
+  <path id="left_rear_door_window" class="glass-window" data-glass-name="Left Front Door Window" role="button" tabindex="0" aria-label="Left Front Door Window" d="M7429.62 314.52 C6541.0,326.5 6001.8,463.1 5522.1,681.3 L5375.67,1242.77 L7177.81,1159.84 Z"><title>Left Front Door Window</title></path>
   <path id="left_quarter_window" class="glass-window" data-glass-name="Left Vent Glass" role="button" tabindex="0" aria-label="Left Vent Glass" d="M5522.1 681.3 C5160.2,845.9 4832.1,1057.0 4413.55,1296.08 L5375.67,1242.77 Z"><title>Left Vent Glass</title></path>
   <g class="driver-figure" id="driver_figure" aria-hidden="true">
    <path d="M6401.5 1198.1c1.03,-6 2.69,-11.96 4.99,-17.84 18.64,-47.66 72.33,-71.26 120.01,-52.63l146.16 57.03 150.4 -115.3c18.34,-18.15 39.96,-33.58 64.89,-44.79 111.92,-50.4 243.58,-0.55 294.01,111.39l1.79 3.97 -5.94 19.91 -776.31 38.25z"/>
