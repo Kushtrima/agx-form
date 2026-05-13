@@ -61,7 +61,7 @@ $iconKeyFor = ['mobile' => 'mobile', 'shop' => 'shop', 'insurance' => 'insurance
 
       <!-- 1. Service mode -->
       <section class="service-section">
-        <h2 class="service-section-title">How would you like to be served?</h2>
+        <h2 class="service-section-title">How would you like to be served?<span class="required-mark" aria-hidden="true">*</span></h2>
         <div class="choice-grid" id="service-mode-group">
           <?php foreach ($serviceModes as $opt):
             $iconKey = $iconKeyFor[$opt['value']] ?? null;
@@ -81,7 +81,7 @@ $iconKeyFor = ['mobile' => 'mobile', 'shop' => 'shop', 'insurance' => 'insurance
 
       <!-- 2. Payment / coverage -->
       <section class="service-section">
-        <h2 class="service-section-title">Payment / coverage</h2>
+        <h2 class="service-section-title">Payment / coverage<span class="required-mark" aria-hidden="true">*</span></h2>
         <div class="choice-grid" id="payment-mode-group">
           <?php foreach ($paymentModes as $opt):
             $iconKey = $iconKeyFor[$opt['value']] ?? null;
@@ -102,7 +102,7 @@ $iconKeyFor = ['mobile' => 'mobile', 'shop' => 'shop', 'insurance' => 'insurance
       <!-- 3. Insurance provider (visible when 'insurance' is picked) -->
       <section class="service-section insurance-section" id="insurance-section" hidden>
         <div class="field">
-          <label for="insurance-provider-select">Insurance provider</label>
+          <label for="insurance-provider-select">Insurance provider<span class="required-mark" aria-hidden="true">*</span></label>
           <select id="insurance-provider-select" name="insurance_provider">
             <option value="" selected disabled>Select your provider</option>
             <?php foreach ($insuranceProviders as $name): ?>
@@ -123,14 +123,14 @@ $iconKeyFor = ['mobile' => 'mobile', 'shop' => 'shop', 'insurance' => 'insurance
           <div class="schedule-field">
             <label class="field-label" for="preferred-date">
               <span class="field-label-icon" aria-hidden="true"><?= $icons['calendar'] ?></span>
-              Preferred date
+              Preferred date<span class="required-mark" aria-hidden="true">*</span>
             </label>
             <input type="date" id="preferred-date" name="preferred_date">
           </div>
           <div class="schedule-field">
             <label class="field-label" id="preferred-time-label">
               <span class="field-label-icon" aria-hidden="true"><?= $icons['clock'] ?></span>
-              Preferred time
+              Preferred time<span class="required-mark" aria-hidden="true">*</span>
             </label>
             <div class="time-row" id="time-slot-group" role="radiogroup" aria-labelledby="preferred-time-label">
               <?php foreach ($timeSlots as $opt): ?>

@@ -170,9 +170,9 @@
   margin-bottom: 16px;
   /* Same height across all titles so the buttons below line up across columns. */
   min-height: 52px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  /* Block layout so the required asterisk stays inline with the title text;
+     .sub keeps its display:block to drop to a new line on its own. */
+  display: block;
 }
 
 /* 4th column hidden by default — only rendered when the grid has the

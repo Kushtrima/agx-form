@@ -210,7 +210,9 @@
       return;
     }
     damageGrid.classList.add("has-glass-options");
-    glassOptsLabel.textContent = cfg.label || "";
+    // Use innerHTML so the required-mark span survives label updates.
+    glassOptsLabel.innerHTML = escapeHtml(cfg.label || "") +
+      ' <span class="required-mark" aria-hidden="true">*</span>';
     glassOptsGroup.innerHTML = "";
     const currentValue = rec[cfg.field] || null;
 

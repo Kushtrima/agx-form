@@ -45,28 +45,28 @@ $vehiclesJson = json_encode(agx_vehicles(), JSON_UNESCAPED_UNICODE);
 
           <div class="form-fields">
             <div class="field">
-              <label for="year">Year</label>
+              <label for="year">Year<span class="required-mark" aria-hidden="true">*</span></label>
               <select id="year" name="year" required>
                 <option value="" selected disabled>Select Year</option>
               </select>
             </div>
 
             <div class="field">
-              <label for="brand">Brand</label>
+              <label for="brand">Brand<span class="required-mark" aria-hidden="true">*</span></label>
               <select id="brand" name="brand" required>
                 <option value="" selected disabled>Select Brand</option>
               </select>
             </div>
 
             <div class="field">
-              <label for="model">Model</label>
+              <label for="model">Model<span class="required-mark" aria-hidden="true">*</span></label>
               <select id="model" name="model" required disabled>
                 <option value="" selected disabled>Select Model</option>
               </select>
             </div>
 
             <div class="field">
-              <label for="body_style">Body Style</label>
+              <label for="body_style">Body Style<span class="required-mark" aria-hidden="true">*</span></label>
               <select id="body_style" name="body_style" required>
                 <option value="" selected disabled>Select Body Style</option>
               </select>

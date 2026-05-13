@@ -111,7 +111,7 @@ function agx_svg(string $path): string {
         <div class="damage-grid" id="damage-grid">
 
           <div class="damage-column">
-            <div class="panel-label">Type of Damage</div>
+            <div class="panel-label">Type of Damage<span class="required-mark" aria-hidden="true">*</span></div>
             <div class="pill-group pill-group-column pill-group-stack" id="damage-group">
               <?php foreach ($damageOptions as $opt): ?>
                 <button type="button" class="pill pill-stack" data-value="<?= htmlspecialchars($opt['value']) ?>">
@@ -125,7 +125,7 @@ function agx_svg(string $path): string {
           </div>
 
           <div class="damage-column">
-            <div class="panel-label">Crack / chip size</div>
+            <div class="panel-label">Crack / chip size<span class="required-mark" aria-hidden="true">*</span></div>
             <div class="pill-group pill-group-column pill-group-stack" id="crack-size-group">
               <?php foreach ($crackSizeOptions as $opt): ?>
                 <button type="button" class="pill pill-stack" data-value="<?= htmlspecialchars($opt['value']) ?>">
@@ -140,7 +140,7 @@ function agx_svg(string $path): string {
 
           <div class="damage-column">
             <div class="panel-label">
-              Special features on this glass
+              Special features on this glass<span class="required-mark" aria-hidden="true">*</span>
               <span class="sub">(select all that apply)</span>
             </div>
             <div class="pill-group pill-group-column features" id="features-group">
@@ -153,7 +153,7 @@ function agx_svg(string $path): string {
           <!-- 4th column — glass-specific options (conditional). Hidden by default;
                JS reveals it when the active glass has options defined. -->
           <div class="damage-column damage-column-glass-options" id="glass-options-column">
-            <div class="panel-label" id="glass-options-label">Glass style</div>
+            <div class="panel-label" id="glass-options-label">Glass style<span class="required-mark" aria-hidden="true">*</span></div>
             <div class="pill-group pill-group-column pill-group-stack" id="glass-options-group"></div>
           </div>
 

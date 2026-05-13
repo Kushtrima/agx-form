@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AGX — Select Damaged Glass</title>
-    <link rel="stylesheet" href="assets/css/form.css?v=1778505062">
-  <link rel="stylesheet" href="assets/css/selector.css?v=1778490437">
+    <link rel="stylesheet" href="assets/css/form.css?v=1778682075">
+  <link rel="stylesheet" href="assets/css/selector.css?v=1778682283">
 </head>
 <body>
   <div class="page-wrap">
@@ -223,7 +223,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
         <div class="damage-grid" id="damage-grid">
 
           <div class="damage-column">
-            <div class="panel-label">Type of Damage</div>
+            <div class="panel-label">Type of Damage<span class="required-mark" aria-hidden="true">*</span></div>
             <div class="pill-group pill-group-column pill-group-stack" id="damage-group">
                               <button type="button" class="pill pill-stack" data-value="chip_crack">
                   <span class="pill-title">Chip / crack</span>
@@ -237,7 +237,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
           </div>
 
           <div class="damage-column">
-            <div class="panel-label">Crack / chip size</div>
+            <div class="panel-label">Crack / chip size<span class="required-mark" aria-hidden="true">*</span></div>
             <div class="pill-group pill-group-column pill-group-stack" id="crack-size-group">
                               <button type="button" class="pill pill-stack" data-value="small">
                   <span class="pill-title">Small</span>
@@ -256,7 +256,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
 
           <div class="damage-column">
             <div class="panel-label">
-              Special features on this glass
+              Special features on this glass<span class="required-mark" aria-hidden="true">*</span>
               <span class="sub">(select all that apply)</span>
             </div>
             <div class="pill-group pill-group-column features" id="features-group">
@@ -272,7 +272,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
           <!-- 4th column — glass-specific options (conditional). Hidden by default;
                JS reveals it when the active glass has options defined. -->
           <div class="damage-column damage-column-glass-options" id="glass-options-column">
-            <div class="panel-label" id="glass-options-label">Glass style</div>
+            <div class="panel-label" id="glass-options-label">Glass style<span class="required-mark" aria-hidden="true">*</span></div>
             <div class="pill-group pill-group-column pill-group-stack" id="glass-options-group"></div>
           </div>
 
@@ -341,6 +341,6 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
   </div>
 
   <script type="application/json" id="agx-glass-options-data">{"front_windshield":{"label":"Glass style","field":"glass_style","options":[{"value":"standard","label":"Standard","sub":"Single piece"},{"value":"split","label":"Split \/ bench style","sub":"Two-piece (older trucks)"}]},"rear_window":{"label":"Defrost","field":"rear_defrost","options":[{"value":"yes","label":"Yes","sub":"Lines embedded in glass"},{"value":"no","label":"No","sub":"Plain rear glass"},{"value":"not_sure","label":"Not sure","sub":"We'll verify on site"}]},"sunroof_glass":{"label":"Sunroof type","field":"sunroof_type","options":[{"value":"single","label":"Single","sub":"One panel"},{"value":"dual","label":"Dual \/ Panoramic","sub":"Two panels with divider"}]}}</script>
-  <script src="assets/js/selector.js?v=1778587753"></script>
+  <script src="assets/js/selector.js?v=1778682134"></script>
 </body>
 </html>

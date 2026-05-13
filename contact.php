@@ -49,27 +49,27 @@ $contactJsV   = @filemtime(__DIR__ . '/assets/js/contact.js');
 
         <div class="contact-row">
           <div class="field">
-            <label for="first-name">First name</label>
+            <label for="first-name">First name<span class="required-mark" aria-hidden="true">*</span></label>
             <input type="text" id="first-name" name="first_name" placeholder="Jane" maxlength="80" autocomplete="given-name" required>
           </div>
           <div class="field">
-            <label for="last-name">Last name</label>
+            <label for="last-name">Last name<span class="required-mark" aria-hidden="true">*</span></label>
             <input type="text" id="last-name" name="last_name" placeholder="Smith" maxlength="80" autocomplete="family-name" required>
           </div>
         </div>
 
         <div class="field">
-          <label for="email">Email address</label>
+          <label for="email">Email address<span class="required-mark" aria-hidden="true">*</span></label>
           <input type="email" id="email" name="email" placeholder="jane@example.com" maxlength="200" autocomplete="email" required>
         </div>
 
         <div class="field">
-          <label for="phone">Phone number</label>
+          <label for="phone">Phone number<span class="required-mark" aria-hidden="true">*</span></label>
           <input type="tel" id="phone" name="phone" placeholder="(555) 000-0000" maxlength="30" autocomplete="tel" required>
         </div>
 
         <div class="field">
-          <label for="zip">ZIP / postal code</label>
+          <label for="zip">ZIP / postal code<span class="required-mark" aria-hidden="true">*</span></label>
           <input type="text" id="zip" name="zip" placeholder="90210" maxlength="12" autocomplete="postal-code" required>
         </div>
 
